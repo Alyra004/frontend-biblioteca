@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Usuários</title>
+    <title>Sistema da Biblioteca</title>
     <style>
         body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; background-color: #f4f4f9; color: #333; padding: 20px; max-width: 800px; margin: auto; }
         h1, h2 { color: #4a4e69; border-bottom: 2px solid #5c67f2; padding-bottom: 10px; }
@@ -21,57 +21,146 @@
 </head>
 <body>
 
-    <h1>Serviço de Usuários da Biblioteca 📚</h1>
+    <h1>Sistema da Biblioteca 📚</h1>
     <p id="status"></p>
     <p id="error"></p>
 
     <div class="container">
-        <h2>Cadastrar Novo Locatário</h2>
-        <form id="form-cadastro">
-            <input type="text" id="id" placeholder="ID (Ex: 102)" required>
-            <input type="text" id="nome" placeholder="Nome Completo" required>
-            <input type="email" id="email" placeholder="E-mail" required>
-            <input type="text" id="telefone" placeholder="Telefone" required>
+        <h2>Serviço de Aluguel</h2>
+        
+        <form id="form-aluguel-criar">
+            <h3>Criar Novo Aluguel</h3>
+            <input type="text" id="aluguel-usuario-id" placeholder="ID do Usuário" required>
+            <input type="text" id="aluguel-livro-id" placeholder="ID do Livro" required>
+            <input type="number" id="aluguel-prazo" placeholder="Prazo (em dias)" required>
+            <button type="submit">Criar Aluguel</button>
+        </form>
+
+        <hr style="margin: 20px 0;">
+
+        <h3>Listar Aluguéis</h3>
+        <button onclick="listarAlugueis()">Buscar Todos os Aluguéis</button>
+        <pre id="lista-alugueis">A lista de aluguéis aparecerá aqui...</pre>
+    </div>
+
+
+    <div class="container">
+        <h2>Serviço de Usuários</h2>
+        
+        <form id="form-usuario-cadastro">
+            <h3>Cadastrar Novo Locatário</h3>
+            <input type="text" id="usuario-id" placeholder="ID (Ex: 102)" required>
+            <input type="text" id="usuario-nome" placeholder="Nome Completo" required>
+            <input type="email" id="usuario-email" placeholder="E-mail" required>
+            <input type="text" id="usuario-telefone" placeholder="Telefone" required>
             <button type="submit">Cadastrar</button>
         </form>
-    </div>
 
-    <div class="container">
-        <h2>Remover Usuário</h2>
-        <form id="form-remocao">
-            <input type="text" id="id-remover" placeholder="ID do usuário a ser removido" required>
+        <hr style="margin: 20px 0;">
+        
+        <form id="form-usuario-remocao">
+            <h3>Remover Usuário</h3>
+            <input type="text" id="usuario-id-remover" placeholder="ID do usuário a ser removido" required>
             <button type="submit" class="delete">Remover Usuário</button>
         </form>
-    </div>
+        
+        <hr style="margin: 20px 0;">
 
-    <div class="container">
-        <h2>Lista de Usuários Cadastrados</h2>
+        <h3>Listar Usuários Cadastrados</h3>
         <button onclick="listarUsuarios()">Buscar Usuários</button>
         <pre id="lista-usuarios">A lista de usuários aparecerá aqui...</pre>
     </div>
 
+
     <script>
+        // ================= URLs DAS APIs =================
+        const USUARIO_API_BASE_URL = 'https://servico-usuarios-production-abcd.up.railway.app';
+        const ALUGUEL_API_BASE_URL = 'URL_DO_SERVICO_DE_ALUGUEL_AQUI'; // <-- ADICIONAR QUANDO ESTIVER PRONTA
 
-        const API_BASE_URL = 'https://servico-usuarios-production.up.railway.app'; 
-
-        const userListElement = document.getElementById('lista-usuarios');
+        // ================= ELEMENTOS DO DOM =================
         const statusElement = document.getElementById('status');
         const errorElement = document.getElementById('error');
-        const formCadastro = document.getElementById('form-cadastro');
-        const formRemocao = document.getElementById('form-remocao');
 
-        // Função para limpar mensagens de status e erro
+        // --- Elementos de Usuário ---
+        const userListElement = document.getElementById('lista-usuarios');
+        const formUsuarioCadastro = document.getElementById('form-usuario-cadastro');
+        const formUsuarioRemocao = document.getElementById('form-usuario-remocao');
+        
+        // --- Elementos de Aluguel ---
+        const aluguelListElement = document.getElementById('lista-alugueis');
+        const formAluguelCriar = document.getElementById('form-aluguel-criar');
+
+
+        // ================= FUNÇÕES GERAIS =================
         function clearMessages() {
             statusElement.textContent = '';
             errorElement.textContent = '';
         }
 
-        // 1. LISTAR USUÁRIOS (GET)
+        // ================= FUNÇÕES DO SERVIÇO DE ALUGUEL =================
+        
+        // LISTAR ALUGUÉIS (GET)
+        async function listarAlugueis() {
+            clearMessages();
+            aluguelListElement.textContent = 'Buscando...';
+            // AVISO: Esta função só funcionará quando a URL do serviço de aluguel for adicionada.
+            if (ALUGUEL_API_BASE_URL === 'URL_DO_SERVICO_DE_ALUGUEL_AQUI') {
+                aluguelListElement.textContent = 'ERRO: A URL do serviço de aluguel ainda não foi configurada.';
+                return;
+            }
+            try {
+                const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis`); // Assumindo endpoint /alugueis
+                if (!response.ok) throw new Error(`Erro: ${response.status}`);
+                const data = await response.json();
+                aluguelListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum aluguel encontrado.';
+            } catch (error) {
+                aluguelListElement.textContent = 'Falha ao buscar dados.';
+                errorElement.textContent = error.message;
+            }
+        }
+        
+        // CRIAR ALUGUEL (POST)
+        formAluguelCriar.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (ALUGUEL_API_BASE_URL === 'URL_DO_SERVICO_DE_ALUGUEL_AQUI') {
+                errorElement.textContent = 'ERRO: A URL do serviço de aluguel ainda não foi configurada.';
+                return;
+            }
+            
+            const novoAluguel = {
+                usuarioId: document.getElementById('aluguel-usuario-id').value,
+                livroId: document.getElementById('aluguel-livro-id').value,
+                prazo: document.getElementById('aluguel-prazo').value
+            };
+
+            try {
+                const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis`, { // Assumindo endpoint /alugueis
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(novoAluguel)
+                });
+                if (!response.ok) {
+                   const errorData = await response.json();
+                   throw new Error(`Erro ${response.status}: ${errorData.mensagem || 'Erro desconhecido'}`);
+                }
+                statusElement.textContent = `Aluguel criado com sucesso!`;
+                formAluguelCriar.reset();
+                listarAlugueis();
+            } catch (error) {
+                errorElement.textContent = `Falha ao criar aluguel: ${error.message}`;
+            }
+        });
+
+
+        // ================= FUNÇÕES DO SERVIÇO DE USUÁRIOS =================
+
+        // LISTAR USUÁRIOS (GET)
         async function listarUsuarios() {
             clearMessages();
             userListElement.textContent = 'Buscando...';
             try {
-                const response = await fetch(`${API_BASE_URL}/usuarios`);
+                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios`);
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
                 const data = await response.json();
                 userListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum usuário encontrado.';
@@ -81,52 +170,44 @@
             }
         }
 
-        // 2. CADASTRAR USUÁRIO (POST)
-        formCadastro.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Impede o recarregamento da página
+        // CADASTRAR USUÁRIO (POST)
+        formUsuarioCadastro.addEventListener('submit', async (event) => {
+            event.preventDefault();
             clearMessages();
-
             const locatario = {
-                id: document.getElementById('id').value,
-                nome: document.getElementById('nome').value,
-                email: document.getElementById('email').value,
-                telefone: document.getElementById('telefone').value,
-                saldoDevedor: 0.0 // Valor padrão
+                id: document.getElementById('usuario-id').value,
+                nome: document.getElementById('usuario-nome').value,
+                email: document.getElementById('usuario-email').value,
+                telefone: document.getElementById('usuario-telefone').value,
+                saldoDevedor: 0.0
             };
-
             try {
-                const response = await fetch(`${API_BASE_URL}/usuarios/locatario`, {
+                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/locatario`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(locatario)
                 });
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
                 statusElement.textContent = `Locatário "${locatario.nome}" cadastrado com sucesso!`;
-                formCadastro.reset(); // Limpa o formulário
-                listarUsuarios(); // Atualiza a lista automaticamente
+                formUsuarioCadastro.reset();
+                listarUsuarios();
             } catch (error) {
                 errorElement.textContent = `Falha ao cadastrar: ${error.message}. O ID já pode existir.`;
             }
         });
 
-        // 3. REMOVER USUÁRIO (DELETE)
-        formRemocao.addEventListener('submit', async (event) => {
+        // REMOVER USUÁRIO (DELETE)
+        formUsuarioRemocao.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
-
-            const idParaRemover = document.getElementById('id-remover').value;
-            if (!idParaRemover) {
-                errorElement.textContent = 'Por favor, insira um ID para remover.';
-                return;
-            }
-
+            const idParaRemover = document.getElementById('usuario-id-remover').value;
             try {
-                const response = await fetch(`${API_BASE_URL}/usuarios/${idParaRemover}`, {
+                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${idParaRemover}`, {
                     method: 'DELETE'
                 });
                 if (!response.ok) throw new Error(`Erro: ${response.status}. Usuário não encontrado.`);
                 statusElement.textContent = `Usuário com ID ${idParaRemover} removido com sucesso!`;
-                formRemocao.reset();
+                formUsuarioRemocao.reset();
                 listarUsuarios();
             } catch (error) {
                 errorElement.textContent = `Falha ao remover: ${error.message}`;
