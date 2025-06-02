@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Usuários</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f9; color: #333; padding: 20px; }
+        h1 { color: #4a4e69; }
+        button { background-color: #5c67f2; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #4a54e1; }
+        pre { background-color: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; }
+        #error { color: #d90429; }
+    </style>
+</head>
+<body>
+
+    <h1>Serviço de Usuários da Biblioteca</h1>
+    <p>Clique no botão abaixo para buscar a lista de todos os usuários cadastrados na sua API na nuvem.</p>
+    
+    <button onclick="listarUsuarios()">Buscar Usuários</button>
+    
+    <h2>Resultado da API:</h2>
+    <pre id="lista-usuarios">A lista de usuários aparecerá aqui...</pre>
+    <p id="error"></p>
+
+    <script>
+        const API_URL = 'https://servico-usuarios-production.up.railway.app/usuarios'; 
+
+        const userListElement = document.getElementById('lista-usuarios');
+        const errorElement = document.getElementById('error');
+
+        async function listarUsuarios() {
+            userListElement.textContent = 'Buscando...';
+            errorElement.textContent = '';
+
+            try {
+                const response = await fetch(API_URL);
+
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.length === 0) {
+                    userListElement.textContent = 'Nenhum usuário encontrado. Cadastre um através do Insomnia para testar.';
+                } else {
+                    userListElement.textContent = JSON.stringify(data, null, 2);
+                }
+
+            } catch (error) {
+                userListElement.textContent = 'Falha ao buscar dados.';
+                errorElement.textContent = 'Erro: ' + error.message;
+                console.error('Erro detalhado:', error);
+            }
+        }
+    </script>
+
+</body>
+</html>
