@@ -28,8 +28,75 @@
     <p id="error"></p>
     
     <div class="container">
-        <h2>Serviço de Usuários</h2>
+        <h2>Serviço de Pagamento</h2>
         
+        <form id="form-pagamento-executar">
+            <h3>Executar Novo Pagamento</h3>
+            <input type="text" id="pagamento-usuario-id" placeholder="ID do Usuário" required>
+            <input type="number" id="pagamento-valor" placeholder="Valor (Ex: 25.50)" step="0.01" required>
+            <select id="pagamento-metodo" required>
+                <option value="" disabled selected>Selecione o método...</option>
+                <option value="CARTAO_CREDITO">Cartão de Crédito</option>
+                <option value="CARTAO_DEBITO">Cartão de Débito</option>
+                <option value="PIX">PIX</option>
+            </select>
+            <button type="submit">Efetuar Pagamento</button>
+        </form>
+
+        <hr>
+
+        <form id="form-pagamento-cancelar">
+            <h3>Cancelar Pagamento</h3>
+            <input type="text" id="pagamento-id-cancelar" placeholder="ID do pagamento a ser cancelado" required>
+            <button type="submit" class="delete">Cancelar Pagamento</button>
+        </form>
+        
+        <hr>
+        
+        <h3>Listar Formas de Pagamento</h3>
+        <button onclick="listarFormasPagamento()">Buscar Formas de Pagamento</button>
+        <pre id="lista-pagamentos">As informações de pagamento aparecerão aqui...</pre>
+    </div>
+
+    <div class="container">
+        <h2>Serviço de Livros</h2>
+        <form id="form-livro-cadastro">
+            <h3>Cadastrar Novo Livro</h3>
+            <input type="text" id="livro-id" placeholder="ID (Ex: 1)" required>
+            <input type="text" id="livro-titulo" placeholder="Título do Livro" required>
+            <input type="text" id="livro-autor" placeholder="Autor" required>
+            <input type="number" id="livro-ano" placeholder="Ano de Publicação" required>
+            <button type="submit">Cadastrar Livro</button>
+        </form>
+        <hr>
+        <form id="form-livro-buscar">
+            <h3>Buscar Livro por ID</h3>
+            <input type="text" id="livro-id-buscar" placeholder="ID do livro a ser buscado" required>
+            <button type="submit">Buscar Livro</button>
+        </form>
+        <hr>
+        <h3>Listar Livros Cadastrados</h3>
+        <button onclick="listarLivros()">Buscar Todos os Livros</button>
+        <pre id="lista-livros">Os resultados do serviço de livros aparecerão aqui...</pre>
+    </div>
+
+    <div class="container">
+        <h2>Serviço de Aluguel</h2>
+        <form id="form-aluguel-criar">
+            <h3>Criar Novo Aluguel</h3>
+            <input type="text" id="aluguel-usuario-id" placeholder="ID do Usuário" required>
+            <input type="text" id="aluguel-livro-id" placeholder="ID do Livro" required>
+            <input type="number" id="aluguel-prazo" placeholder="Prazo (em dias)" required>
+            <button type="submit">Criar Aluguel</button>
+        </form>
+        <hr>
+        <h3>Listar Aluguéis</h3>
+        <button onclick="listarAlugueis()">Buscar Todos os Aluguéis</button>
+        <pre id="lista-alugueis">A lista de aluguéis aparecerá aqui...</pre>
+    </div>
+
+    <div class="container">
+        <h2>Serviço de Usuários</h2>
         <form id="form-usuario-cadastro">
             <h3>Cadastrar Novo Usuário</h3>
             <input type="text" id="usuario-id" placeholder="ID (Ex: 102)" required>
@@ -43,9 +110,7 @@
             </select>
             <button type="submit">Cadastrar Usuário</button>
         </form>
-
         <hr>
-        
         <form id="form-usuario-saldo">
             <h3>Atualizar Saldo Devedor</h3>
             <p style="font-size: 14px; color: #666; margin-top: -10px;">Use valores positivos para adicionar dívida e negativos para abater pagamentos.</p>
@@ -53,17 +118,13 @@
             <input type="number" step="0.01" id="usuario-valor-saldo" placeholder="Valor a adicionar/subtrair (Ex: 25.50 ou -10.00)" required>
             <button type="submit">Atualizar Saldo</button>
         </form>
-
         <hr>
-        
         <form id="form-usuario-remocao">
             <h3>Remover Usuário</h3>
             <input type="text" id="usuario-id-remover" placeholder="ID do usuário a ser removido" required>
             <button type="submit" class="delete">Remover Usuário</button>
         </form>
-        
         <hr>
-
         <h3>Listar Usuários Cadastrados</h3>
         <button onclick="listarUsuarios()">Buscar Usuários</button>
         <pre id="lista-usuarios">A lista de usuários aparecerá aqui...</pre>
@@ -71,27 +132,39 @@
 
     <script>
         // ================= URLs DAS APIs =================
-        const USUARIO_API_BASE_URL = 'https://servico-usuarios-production.up.railway.app'; // <-- COLOQUE SUA URL DO RAILWAY AQUI
-        // Adicione as outras URLs quando estiverem prontas
-        // const LIVRO_API_BASE_URL = '...';
-        // const ALUGUEL_API_BASE_URL = '...';
-        // const PAGAMENTO_API_BASE_URL = '...';
-
+        const USUARIO_API_BASE_URL = 'https://servico-usuarios-production.up.railway.app';
+        const ALUGUEL_API_BASE_URL = 'URL_DO_SERVICO_DE_ALUGUEL_AQUI';
+        const LIVRO_API_BASE_URL = 'URL_DO_SERVICO_DE_LIVROS_AQUI';
+        const PAGAMENTO_API_BASE_URL = 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI';
 
         // ================= ELEMENTOS DO DOM =================
         const statusElement = document.getElementById('status');
         const errorElement = document.getElementById('error');
 
-        // --- Elementos de Usuário ---
+        // --- Pagamento ---
+        const paymentListElement = document.getElementById('lista-pagamentos');
+        const formPagamentoExecutar = document.getElementById('form-pagamento-executar');
+        const formPagamentoCancelar = document.getElementById('form-pagamento-cancelar');
+
+        // --- Livro ---
+        const bookListElement = document.getElementById('lista-livros');
+        const formLivroCadastro = document.getElementById('form-livro-cadastro');
+        const formLivroBuscar = document.getElementById('form-livro-buscar');
+
+        // --- Aluguel ---
+        const aluguelListElement = document.getElementById('lista-alugueis');
+        const formAluguelCriar = document.getElementById('form-aluguel-criar');
+
+        // --- Usuário ---
         const userListElement = document.getElementById('lista-usuarios');
         const formUsuarioCadastro = document.getElementById('form-usuario-cadastro');
         const formUsuarioRemocao = document.getElementById('form-usuario-remocao');
-        const formUsuarioSaldo = document.getElementById('form-usuario-saldo'); // NOVO
+        const formUsuarioSaldo = document.getElementById('form-usuario-saldo');
         
         // ================= FUNÇÕES GERAIS =================
         function checkApiUrl(apiUrl, placeholder) {
             if (!apiUrl || apiUrl === placeholder) {
-                errorElement.textContent = `ERRO: A URL de um dos serviços ainda não foi configurada no HTML.`;
+                errorElement.textContent = `ERRO: A URL do serviço correspondente (${placeholder.split('_')[2]}) ainda não foi configurada.`;
                 return false;
             }
             return true;
@@ -102,107 +175,6 @@
             errorElement.textContent = '';
         }
 
-
-        // ================= FUNÇÕES DO SERVIÇO DE USUÁRIOS (ATUALIZADAS) =================
-
-        // LISTAR USUÁRIOS (GET /usuarios)
-        async function listarUsuarios() {
-            clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SEU_SERVICO_DE_USUARIOS_AQUI')) return;
-            userListElement.textContent = 'Buscando...';
-            try {
-                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios`);
-                if (!response.ok) throw new Error(`Erro: ${response.status}`);
-                const data = await response.json();
-                userListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum usuário encontrado.';
-            } catch (error) {
-                userListElement.textContent = 'Falha ao buscar dados.';
-                errorElement.textContent = error.message;
-            }
-        }
-
-        // CADASTRAR USUÁRIO (POST /usuarios) - ATUALIZADO
-        formUsuarioCadastro.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SEU_SERVICO_DE_USUARIOS_AQUI')) return;
-    
-         // Agora cria um objeto 'usuario' genérico
-            const usuario = {
-            id: document.getElementById('usuario-id').value,
-            nome: document.getElementById('usuario-nome').value,
-            email: document.getElementById('usuario-email').value,
-            telefone: document.getElementById('usuario-telefone').value,
-            tipo: document.getElementById('usuario-tipo').value, // <-- Pega o novo campo 'tipo'
-            saldoDevedor: 0.0, // Valores padrão no cadastro
-            inadimplente: false
-        };
-
-        try {
-            // CORREÇÃO CRÍTICA: Endpoint agora é apenas /usuarios
-            const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(usuario)
-            });
-
-            if (response.status === 400) throw new Error(`Erro 400: Dados inválidos ou ID já existente.`);
-            if (!response.ok) throw new Error(`Erro: ${response.status}`);
-
-            const data = await response.json();
-            statusElement.textContent = `Usuário "${data.nome}" (tipo: ${data.tipo}) cadastrado com sucesso!`;
-            formUsuarioCadastro.reset();
-            listarUsuarios();
-        } catch (error) {
-            errorElement.textContent = `Falha ao cadastrar: ${error.message}`;
-        }
-        });
-
-        // ATUALIZAR SALDO (PATCH /usuarios/{id}/saldo) - NOVO
-        formUsuarioSaldo.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SEU_SERVICO_DE_USUARIOS_AQUI')) return;
-
-            const usuarioId = document.getElementById('usuario-id-saldo').value;
-            const valor = parseFloat(document.getElementById('usuario-valor-saldo').value);
-
-            try {
-                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${usuarioId}/saldo`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ valor: valor })
-                });
-
-                if (response.status === 404) throw new Error(`Erro 404: Usuário com ID ${usuarioId} não encontrado.`);
-                if (!response.ok) throw new Error(`Erro: ${response.status}`);
-                
-                const data = await response.json();
-                statusElement.textContent = `Saldo do usuário ${data.nome} atualizado para R$${data.saldoDevedor.toFixed(2)}. Inadimplente: ${data.inadimplente}`;
-                formUsuarioSaldo.reset();
-                listarUsuarios(); // Atualiza a lista principal
-            } catch (error) {
-                errorElement.textContent = `Falha ao atualizar saldo: ${error.message}`;
-            }
-        });
-
-        // REMOVER USUÁRIO (DELETE /usuarios/{id})
-        formUsuarioRemocao.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SEU_SERVICO_DE_USUARIOS_AQUI')) return;
-            const idParaRemover = document.getElementById('usuario-id-remover').value;
-            try {
-                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${idParaRemover}`, { method: 'DELETE' });
-                if (!response.ok) throw new Error(`Erro: ${response.status}. Usuário não encontrado.`);
-                statusElement.textContent = `Usuário com ID ${idParaRemover} removido com sucesso!`;
-                formUsuarioRemocao.reset();
-                listarUsuarios();
-            } catch (error) {
-                errorElement.textContent = `Falha ao remover: ${error.message}`;
-            }
-        });
-
         // ================= FUNÇÕES DO SERVIÇO DE PAGAMENTO =================
         
         async function listarFormasPagamento() {
@@ -210,7 +182,6 @@
             if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI')) return;
             paymentListElement.textContent = 'Buscando...';
             try {
-                // Assumindo um endpoint que lista as formas de pagamento disponíveis.
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/formas`);
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
                 const data = await response.json();
@@ -222,10 +193,8 @@
         }
 
         formPagamentoExecutar.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            clearMessages();
+            event.preventDefault(); clearMessages();
             if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI')) return;
-            
             const novoPagamento = {
                 usuarioId: document.getElementById('pagamento-usuario-id').value,
                 valor: parseFloat(document.getElementById('pagamento-valor').value),
@@ -247,15 +216,11 @@
         });
 
         formPagamentoCancelar.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            clearMessages();
+            event.preventDefault(); clearMessages();
             if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI')) return;
             const pagamentoId = document.getElementById('pagamento-id-cancelar').value;
             try {
-                // O cancelamento pode ser um DELETE ou um POST para um sub-recurso /cancelar
-                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/${pagamentoId}`, {
-                    method: 'DELETE'
-                });
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/${pagamentoId}`, { method: 'DELETE' });
                 if (!response.ok) throw new Error(`Erro ${response.status}`);
                 statusElement.textContent = `Pagamento com ID ${pagamentoId} cancelado com sucesso!`;
                 formPagamentoCancelar.reset();
@@ -320,7 +285,6 @@
             }
         });
 
-
         // ================= FUNÇÕES DO SERVIÇO DE ALUGUEL =================
         async function listarAlugueis() {
             clearMessages();
@@ -363,6 +327,87 @@
             }
         });
 
+        // ================= FUNÇÕES DO SERVIÇO DE USUÁRIOS =================
+        async function listarUsuarios() {
+            clearMessages();
+            if (!checkApiUrl(USUARIO_API_BASE_URL, 'https://servico-usuarios-production.up.railway.app')) return;
+            userListElement.textContent = 'Buscando...';
+            try {
+                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios`);
+                if (!response.ok) throw new Error(`Erro: ${response.status}`);
+                const data = await response.json();
+                userListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum usuário encontrado.';
+            } catch (error) {
+                userListElement.textContent = 'Falha ao buscar dados.';
+                errorElement.textContent = error.message;
+            }
+        }
+
+        formUsuarioCadastro.addEventListener('submit', async (event) => {
+            event.preventDefault(); clearMessages();
+            if (!checkApiUrl(USUARIO_API_BASE_URL, 'https://servico-usuarios-production.up.railway.app')) return;
+            const usuario = {
+                id: document.getElementById('usuario-id').value,
+                nome: document.getElementById('usuario-nome').value,
+                email: document.getElementById('usuario-email').value,
+                telefone: document.getElementById('usuario-telefone').value,
+                tipo: document.getElementById('usuario-tipo').value,
+                saldoDevedor: 0.0,
+                inadimplente: false
+            };
+            try {
+                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(usuario)
+                });
+                if (response.status === 400) throw new Error(`Erro 400: Dados inválidos ou ID já existente.`);
+                if (!response.ok) throw new Error(`Erro: ${response.status}`);
+                const data = await response.json();
+                statusElement.textContent = `Usuário "${data.nome}" (tipo: ${data.tipo}) cadastrado com sucesso!`;
+                formUsuarioCadastro.reset();
+                listarUsuarios();
+            } catch (error) {
+                errorElement.textContent = `Falha ao cadastrar: ${error.message}`;
+            }
+        });
+
+        formUsuarioSaldo.addEventListener('submit', async (event) => {
+            event.preventDefault(); clearMessages();
+            if (!checkApiUrl(USUARIO_API_BASE_URL, 'https://servico-usuarios-production.up.railway.app')) return;
+            const usuarioId = document.getElementById('usuario-id-saldo').value;
+            const valor = parseFloat(document.getElementById('usuario-valor-saldo').value);
+            try {
+                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${usuarioId}/saldo`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ valor: valor })
+                });
+                if (response.status === 404) throw new Error(`Erro 404: Usuário com ID ${usuarioId} não encontrado.`);
+                if (!response.ok) throw new Error(`Erro: ${response.status}`);
+                const data = await response.json();
+                statusElement.textContent = `Saldo do usuário ${data.nome} atualizado para R$${data.saldoDevedor.toFixed(2)}. Inadimplente: ${data.inadimplente}`;
+                formUsuarioSaldo.reset();
+                listarUsuarios();
+            } catch (error) {
+                errorElement.textContent = `Falha ao atualizar saldo: ${error.message}`;
+            }
+        });
+
+        formUsuarioRemocao.addEventListener('submit', async (event) => {
+            event.preventDefault(); clearMessages();
+            if (!checkApiUrl(USUARIO_API_BASE_URL, 'https://servico-usuarios-production.up.railway.app')) return;
+            const idParaRemover = document.getElementById('usuario-id-remover').value;
+            try {
+                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${idParaRemover}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error(`Erro: ${response.status}. Usuário não encontrado.`);
+                statusElement.textContent = `Usuário com ID ${idParaRemover} removido com sucesso!`;
+                formUsuarioRemocao.reset();
+                listarUsuarios();
+            } catch (error) {
+                errorElement.textContent = `Falha ao remover: ${error.message}`;
+            }
+        });
     </script>
 </body>
 </html>
