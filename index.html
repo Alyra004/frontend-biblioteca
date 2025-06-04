@@ -134,7 +134,7 @@
         // ================= URLs DAS APIs =================
         const USUARIO_API_BASE_URL = 'https://servico-usuarios-production.up.railway.app';
         const ALUGUEL_API_BASE_URL = 'URL_DO_SERVICO_DE_ALUGUEL_AQUI';
-        const LIVRO_API_BASE_URL = 'URL_DO_SERVICO_DE_LIVROS_AQUI';
+        const LIVRO_API_BASE_URL = 'http://miocroservice-books-production.up.railway.app';
         const PAGAMENTO_API_BASE_URL = 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI';
 
         // ================= ELEMENTOS DO DOM =================
@@ -232,7 +232,7 @@
         // ================= FUNÇÕES DO SERVIÇO DE LIVROS =================
         async function listarLivros() {
             clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI', 'Livros')) return;
+            if (!checkApiUrl(LIVRO_API_BASE_URL, 'http://miocroservice-books-production.up.railway.app', 'Livros')) return;
             bookListElement.textContent = 'Buscando...';
             try {
                 const response = await fetch(`${LIVRO_API_BASE_URL}/livros`);
@@ -247,7 +247,7 @@
         
         formLivroBuscar.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI', 'Livros')) return;
+            if (!checkApiUrl(LIVRO_API_BASE_URL, 'http://miocroservice-books-production.up.railway.app', 'Livros')) return;
             const livroId = document.getElementById('livro-id-buscar').value;
             bookListElement.textContent = 'Buscando...';
             try {
@@ -263,7 +263,7 @@
 
         formLivroCadastro.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI', 'Livros')) return;
+            if (!checkApiUrl(LIVRO_API_BASE_URL, 'http://miocroservice-books-production.up.railway.app', 'Livros')) return;
             const novoLivro = {
                 id: document.getElementById('livro-id').value,
                 titulo: document.getElementById('livro-titulo').value,
