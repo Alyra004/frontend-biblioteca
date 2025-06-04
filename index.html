@@ -14,7 +14,7 @@
         button.delete { background-color: #d90429; }
         button.delete:hover { background-color: #b20021; }
         pre { background-color: #eee; border: 1px solid #ddd; padding: 15px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; margin-top: 10px; }
-        input { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc; }
+        input, select { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc; }
         form { display: flex; flex-direction: column; }
         hr { border: 0; height: 1px; background-color: #ddd; margin: 20px 0; }
         #status { color: #007f5f; font-weight: bold; }
@@ -26,10 +26,40 @@
     <h1>Sistema da Biblioteca 📚</h1>
     <p id="status"></p>
     <p id="error"></p>
+    
+    <div class="container">
+        <h2>Serviço de Pagamento</h2>
+        
+        <form id="form-pagamento-executar">
+            <h3>Executar Novo Pagamento</h3>
+            <input type="text" id="pagamento-usuario-id" placeholder="ID do Usuário" required>
+            <input type="number" id="pagamento-valor" placeholder="Valor (Ex: 25.50)" step="0.01" required>
+            <select id="pagamento-metodo" required>
+                <option value="" disabled selected>Selecione o método...</option>
+                <option value="CARTAO_CREDITO">Cartão de Crédito</option>
+                <option value="CARTAO_DEBITO">Cartão de Débito</option>
+                <option value="PIX">PIX</option>
+            </select>
+            <button type="submit">Efetuar Pagamento</button>
+        </form>
+
+        <hr>
+
+        <form id="form-pagamento-cancelar">
+            <h3>Cancelar Pagamento</h3>
+            <input type="text" id="pagamento-id-cancelar" placeholder="ID do pagamento a ser cancelado" required>
+            <button type="submit" class="delete">Cancelar Pagamento</button>
+        </form>
+        
+        <hr>
+        
+        <h3>Listar Formas de Pagamento</h3>
+        <button onclick="listarFormasPagamento()">Buscar Formas de Pagamento</button>
+        <pre id="lista-pagamentos">As informações de pagamento aparecerão aqui...</pre>
+    </div>
 
     <div class="container">
         <h2>Serviço de Livros</h2>
-        
         <form id="form-livro-cadastro">
             <h3>Cadastrar Novo Livro</h3>
             <input type="text" id="livro-id" placeholder="ID (Ex: 1)" required>
@@ -38,26 +68,20 @@
             <input type="number" id="livro-ano" placeholder="Ano de Publicação" required>
             <button type="submit">Cadastrar Livro</button>
         </form>
-
         <hr>
-
         <form id="form-livro-buscar">
             <h3>Buscar Livro por ID</h3>
             <input type="text" id="livro-id-buscar" placeholder="ID do livro a ser buscado" required>
             <button type="submit">Buscar Livro</button>
         </form>
-
         <hr>
-        
         <h3>Listar Livros Cadastrados</h3>
         <button onclick="listarLivros()">Buscar Todos os Livros</button>
-        
         <pre id="lista-livros">Os resultados do serviço de livros aparecerão aqui...</pre>
     </div>
 
     <div class="container">
         <h2>Serviço de Aluguel</h2>
-        
         <form id="form-aluguel-criar">
             <h3>Criar Novo Aluguel</h3>
             <input type="text" id="aluguel-usuario-id" placeholder="ID do Usuário" required>
@@ -65,9 +89,7 @@
             <input type="number" id="aluguel-prazo" placeholder="Prazo (em dias)" required>
             <button type="submit">Criar Aluguel</button>
         </form>
-
         <hr>
-
         <h3>Listar Aluguéis</h3>
         <button onclick="listarAlugueis()">Buscar Todos os Aluguéis</button>
         <pre id="lista-alugueis">A lista de aluguéis aparecerá aqui...</pre>
@@ -75,7 +97,6 @@
 
     <div class="container">
         <h2>Serviço de Usuários</h2>
-        
         <form id="form-usuario-cadastro">
             <h3>Cadastrar Novo Locatário</h3>
             <input type="text" id="usuario-id" placeholder="ID (Ex: 102)" required>
@@ -84,17 +105,13 @@
             <input type="text" id="usuario-telefone" placeholder="Telefone" required>
             <button type="submit">Cadastrar</button>
         </form>
-
         <hr>
-        
         <form id="form-usuario-remocao">
             <h3>Remover Usuário</h3>
             <input type="text" id="usuario-id-remover" placeholder="ID do usuário a ser removido" required>
             <button type="submit" class="delete">Remover Usuário</button>
         </form>
-        
         <hr>
-
         <h3>Listar Usuários Cadastrados</h3>
         <button onclick="listarUsuarios()">Buscar Usuários</button>
         <pre id="lista-usuarios">A lista de usuários aparecerá aqui...</pre>
@@ -104,11 +121,17 @@
         // ================= URLs DAS APIs =================
         const USUARIO_API_BASE_URL = 'https://servico-usuarios-production-a5e2.up.railway.app';
         const ALUGUEL_API_BASE_URL = 'URL_DO_SERVICO_DE_ALUGUEL_AQUI';
-        const LIVRO_API_BASE_URL = 'URL_DO_SERVICO_DE_LIVROS_AQUI'; // <-- ADICIONAR QUANDO ESTIVER PRONTA
+        const LIVRO_API_BASE_URL = 'URL_DO_SERVICO_DE_LIVROS_AQUI';
+        const PAGAMENTO_API_BASE_URL = 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI'; // <-- ADICIONAR QUANDO ESTIVER PRONTA
 
         // ================= ELEMENTOS DO DOM =================
         const statusElement = document.getElementById('status');
         const errorElement = document.getElementById('error');
+
+        // --- Elementos de Pagamento ---
+        const paymentListElement = document.getElementById('lista-pagamentos');
+        const formPagamentoExecutar = document.getElementById('form-pagamento-executar');
+        const formPagamentoCancelar = document.getElementById('form-pagamento-cancelar');
 
         // --- Elementos de Livro ---
         const bookListElement = document.getElementById('lista-livros');
@@ -127,7 +150,7 @@
         // ================= FUNÇÕES GERAIS =================
         function checkApiUrl(apiUrl, placeholder) {
             if (apiUrl === placeholder) {
-                errorElement.textContent = `ERRO: A URL do serviço correspondente ainda não foi configurada.`;
+                errorElement.textContent = `ERRO: A URL do serviço correspondente (${placeholder.split('_')[2]}) ainda não foi configurada.`;
                 return false;
             }
             return true;
@@ -138,9 +161,68 @@
             errorElement.textContent = '';
         }
 
-        // ================= FUNÇÕES DO SERVIÇO DE LIVROS =================
+        // ================= FUNÇÕES DO SERVIÇO DE PAGAMENTO =================
         
-        // LISTAR LIVROS (GET)
+        async function listarFormasPagamento() {
+            clearMessages();
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI')) return;
+            paymentListElement.textContent = 'Buscando...';
+            try {
+                // Assumindo um endpoint que lista as formas de pagamento disponíveis.
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/formas`);
+                if (!response.ok) throw new Error(`Erro: ${response.status}`);
+                const data = await response.json();
+                paymentListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhuma forma de pagamento encontrada.';
+            } catch (error) {
+                paymentListElement.textContent = 'Falha ao buscar dados.';
+                errorElement.textContent = error.message;
+            }
+        }
+
+        formPagamentoExecutar.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI')) return;
+            
+            const novoPagamento = {
+                usuarioId: document.getElementById('pagamento-usuario-id').value,
+                valor: parseFloat(document.getElementById('pagamento-valor').value),
+                metodo: document.getElementById('pagamento-metodo').value
+            };
+            try {
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(novoPagamento)
+                });
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                const data = await response.json();
+                statusElement.textContent = `Pagamento (ID: ${data.id}) de R$${data.valor} efetuado com sucesso!`;
+                formPagamentoExecutar.reset();
+            } catch (error) {
+                errorElement.textContent = `Falha ao executar pagamento: ${error.message}`;
+            }
+        });
+
+        formPagamentoCancelar.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI')) return;
+            const pagamentoId = document.getElementById('pagamento-id-cancelar').value;
+            try {
+                // O cancelamento pode ser um DELETE ou um POST para um sub-recurso /cancelar
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/${pagamentoId}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                statusElement.textContent = `Pagamento com ID ${pagamentoId} cancelado com sucesso!`;
+                formPagamentoCancelar.reset();
+            } catch (error) {
+                errorElement.textContent = `Falha ao cancelar pagamento: ${error.message}`;
+            }
+        });
+
+        // ================= FUNÇÕES DO SERVIÇO DE LIVROS =================
         async function listarLivros() {
             clearMessages();
             if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI')) return;
@@ -156,10 +238,8 @@
             }
         }
         
-        // BUSCAR LIVRO POR ID (GET)
         formLivroBuscar.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            clearMessages();
+            event.preventDefault(); clearMessages();
             if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI')) return;
             const livroId = document.getElementById('livro-id-buscar').value;
             bookListElement.textContent = 'Buscando...';
@@ -174,12 +254,9 @@
             }
         });
 
-        // CADASTRAR LIVRO (POST)
         formLivroCadastro.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            clearMessages();
+            event.preventDefault(); clearMessages();
             if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI')) return;
-            
             const novoLivro = {
                 id: document.getElementById('livro-id').value,
                 titulo: document.getElementById('livro-titulo').value,
@@ -219,8 +296,7 @@
         }
         
         formAluguelCriar.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            clearMessages();
+            event.preventDefault(); clearMessages();
             if (!checkApiUrl(ALUGUEL_API_BASE_URL, 'URL_DO_SERVICO_DE_ALUGUEL_AQUI')) return;
             const novoAluguel = {
                 usuarioId: document.getElementById('aluguel-usuario-id').value,
@@ -260,8 +336,7 @@
         }
 
         formUsuarioCadastro.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            clearMessages();
+            event.preventDefault(); clearMessages();
             const locatario = {
                 id: document.getElementById('usuario-id').value,
                 nome: document.getElementById('usuario-nome').value,
@@ -285,8 +360,7 @@
         });
 
         formUsuarioRemocao.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            clearMessages();
+            event.preventDefault(); clearMessages();
             const idParaRemover = document.getElementById('usuario-id-remover').value;
             try {
                 const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${idParaRemover}`, { method: 'DELETE' });
