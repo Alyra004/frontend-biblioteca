@@ -162,9 +162,9 @@
         const formUsuarioSaldo = document.getElementById('form-usuario-saldo');
         
         // ================= FUNÇÕES GERAIS =================
-        function checkApiUrl(apiUrl, placeholder) {
-            if (!apiUrl || apiUrl === placeholder) {
-                errorElement.textContent = `ERRO: A URL do serviço correspondente (${placeholder.split('_')[2]}) ainda não foi configurada.`;
+        function checkApiUrl(apiUrl, placeholderText, serviceName) {
+            if (!apiUrl || apiUrl === placeholderText) {
+                errorElement.textContent = `ERRO: A URL do serviço de ${serviceName} ainda não foi configurada.`;
                 return false;
             }
             return true;
@@ -179,7 +179,7 @@
         
         async function listarFormasPagamento() {
             clearMessages();
-            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI')) return;
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI', 'Pagamento')) return;
             paymentListElement.textContent = 'Buscando...';
             try {
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/formas`);
@@ -194,7 +194,7 @@
 
         formPagamentoExecutar.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI')) return;
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI', 'Pagamento')) return;
             const novoPagamento = {
                 usuarioId: document.getElementById('pagamento-usuario-id').value,
                 valor: parseFloat(document.getElementById('pagamento-valor').value),
@@ -217,7 +217,7 @@
 
         formPagamentoCancelar.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI')) return;
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI', 'Pagamento')) return;
             const pagamentoId = document.getElementById('pagamento-id-cancelar').value;
             try {
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/${pagamentoId}`, { method: 'DELETE' });
@@ -232,7 +232,7 @@
         // ================= FUNÇÕES DO SERVIÇO DE LIVROS =================
         async function listarLivros() {
             clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI')) return;
+            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI', 'Livros')) return;
             bookListElement.textContent = 'Buscando...';
             try {
                 const response = await fetch(`${LIVRO_API_BASE_URL}/livros`);
@@ -247,7 +247,7 @@
         
         formLivroBuscar.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI')) return;
+            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI', 'Livros')) return;
             const livroId = document.getElementById('livro-id-buscar').value;
             bookListElement.textContent = 'Buscando...';
             try {
@@ -263,7 +263,7 @@
 
         formLivroCadastro.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI')) return;
+            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI', 'Livros')) return;
             const novoLivro = {
                 id: document.getElementById('livro-id').value,
                 titulo: document.getElementById('livro-titulo').value,
@@ -285,10 +285,11 @@
             }
         });
 
+
         // ================= FUNÇÕES DO SERVIÇO DE ALUGUEL =================
         async function listarAlugueis() {
             clearMessages();
-            if (!checkApiUrl(ALUGUEL_API_BASE_URL, 'URL_DO_SERVICO_DE_ALUGUEL_AQUI')) return;
+            if (!checkApiUrl(ALUGUEL_API_BASE_URL, 'URL_DO_SERVICO_DE_ALUGUEL_AQUI', 'Aluguel')) return;
             aluguelListElement.textContent = 'Buscando...';
             try {
                 const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis`);
@@ -303,7 +304,7 @@
         
         formAluguelCriar.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(ALUGUEL_API_BASE_URL, 'URL_DO_SERVICO_DE_ALUGUEL_AQUI')) return;
+            if (!checkApiUrl(ALUGUEL_API_BASE_URL, 'URL_DO_SERVICO_DE_ALUGUEL_AQUI', 'Aluguel')) return;
             const novoAluguel = {
                 usuarioId: document.getElementById('aluguel-usuario-id').value,
                 livroId: document.getElementById('aluguel-livro-id').value,
@@ -330,7 +331,7 @@
         // ================= FUNÇÕES DO SERVIÇO DE USUÁRIOS =================
         async function listarUsuarios() {
             clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'https://servico-usuarios-production.up.railway.app')) return;
+            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) return;
             userListElement.textContent = 'Buscando...';
             try {
                 const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios`);
@@ -345,7 +346,7 @@
 
         formUsuarioCadastro.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'https://servico-usuarios-production.up.railway.app')) return;
+            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) return;
             const usuario = {
                 id: document.getElementById('usuario-id').value,
                 nome: document.getElementById('usuario-nome').value,
@@ -374,7 +375,7 @@
 
         formUsuarioSaldo.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'https://servico-usuarios-production.up.railway.app')) return;
+            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) return;
             const usuarioId = document.getElementById('usuario-id-saldo').value;
             const valor = parseFloat(document.getElementById('usuario-valor-saldo').value);
             try {
@@ -396,7 +397,7 @@
 
         formUsuarioRemocao.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'https://servico-usuarios-production.up.railway.app')) return;
+            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) return;
             const idParaRemover = document.getElementById('usuario-id-remover').value;
             try {
                 const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${idParaRemover}`, { method: 'DELETE' });
