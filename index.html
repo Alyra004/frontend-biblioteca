@@ -126,36 +126,36 @@
             event.preventDefault();
             clearMessages();
             if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SEU_SERVICO_DE_USUARIOS_AQUI')) return;
-            
-            // Agora cria um objeto 'usuario' genérico
+    
+         // Agora cria um objeto 'usuario' genérico
             const usuario = {
-                id: document.getElementById('usuario-id').value,
-                nome: document.getElementById('usuario-nome').value,
-                email: document.getElementById('usuario-email').value,
-                telefone: document.getElementById('usuario-telefone').value,
-                tipo: document.getElementById('usuario-tipo').value, // <-- Pega o novo campo 'tipo'
-                saldoDevedor: 0.0, // Valores padrão no cadastro
-                inadimplente: false
-            };
+            id: document.getElementById('usuario-id').value,
+            nome: document.getElementById('usuario-nome').value,
+            email: document.getElementById('usuario-email').value,
+            telefone: document.getElementById('usuario-telefone').value,
+            tipo: document.getElementById('usuario-tipo').value, // <-- Pega o novo campo 'tipo'
+            saldoDevedor: 0.0, // Valores padrão no cadastro
+            inadimplente: false
+        };
 
-            try {
-                // Endpoint agora é apenas /usuarios
-                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(usuario)
-                });
+        try {
+            // CORREÇÃO CRÍTICA: Endpoint agora é apenas /usuarios
+            const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(usuario)
+            });
 
-                if (response.status === 400) throw new Error(`Erro 400: Dados inválidos ou ID já existente.`);
-                if (!response.ok) throw new Error(`Erro: ${response.status}`);
+            if (response.status === 400) throw new Error(`Erro 400: Dados inválidos ou ID já existente.`);
+            if (!response.ok) throw new Error(`Erro: ${response.status}`);
 
-                const data = await response.json();
-                statusElement.textContent = `Usuário "${data.nome}" (tipo: ${data.tipo}) cadastrado com sucesso!`;
-                formUsuarioCadastro.reset();
-                listarUsuarios();
-            } catch (error) {
-                errorElement.textContent = `Falha ao cadastrar: ${error.message}`;
-            }
+            const data = await response.json();
+            statusElement.textContent = `Usuário "${data.nome}" (tipo: ${data.tipo}) cadastrado com sucesso!`;
+            formUsuarioCadastro.reset();
+            listarUsuarios();
+        } catch (error) {
+            errorElement.textContent = `Falha ao cadastrar: ${error.message}`;
+        }
         });
 
         // ATUALIZAR SALDO (PATCH /usuarios/{id}/saldo) - NOVO
