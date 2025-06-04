@@ -6,15 +6,17 @@
     <title>Sistema da Biblioteca</title>
     <style>
         body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; background-color: #f4f4f9; color: #333; padding: 20px; max-width: 800px; margin: auto; }
-        h1, h2 { color: #4a4e69; border-bottom: 2px solid #5c67f2; padding-bottom: 10px; }
+        h1, h2, h3 { color: #4a4e69; }
+        h2 { border-bottom: 2px solid #5c67f2; padding-bottom: 10px; }
         .container { background-color: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         button { background-color: #5c67f2; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 16px; }
         button:hover { background-color: #4a54e1; }
         button.delete { background-color: #d90429; }
         button.delete:hover { background-color: #b20021; }
-        pre { background-color: #eee; border: 1px solid #ddd; padding: 15px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; }
+        pre { background-color: #eee; border: 1px solid #ddd; padding: 15px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; margin-top: 10px; }
         input { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc; }
         form { display: flex; flex-direction: column; }
+        hr { border: 0; height: 1px; background-color: #ddd; margin: 20px 0; }
         #status { color: #007f5f; font-weight: bold; }
         #error { color: #d90429; font-weight: bold; }
     </style>
@@ -24,6 +26,34 @@
     <h1>Sistema da Biblioteca 📚</h1>
     <p id="status"></p>
     <p id="error"></p>
+
+    <div class="container">
+        <h2>Serviço de Livros</h2>
+        
+        <form id="form-livro-cadastro">
+            <h3>Cadastrar Novo Livro</h3>
+            <input type="text" id="livro-id" placeholder="ID (Ex: 1)" required>
+            <input type="text" id="livro-titulo" placeholder="Título do Livro" required>
+            <input type="text" id="livro-autor" placeholder="Autor" required>
+            <input type="number" id="livro-ano" placeholder="Ano de Publicação" required>
+            <button type="submit">Cadastrar Livro</button>
+        </form>
+
+        <hr>
+
+        <form id="form-livro-buscar">
+            <h3>Buscar Livro por ID</h3>
+            <input type="text" id="livro-id-buscar" placeholder="ID do livro a ser buscado" required>
+            <button type="submit">Buscar Livro</button>
+        </form>
+
+        <hr>
+        
+        <h3>Listar Livros Cadastrados</h3>
+        <button onclick="listarLivros()">Buscar Todos os Livros</button>
+        
+        <pre id="lista-livros">Os resultados do serviço de livros aparecerão aqui...</pre>
+    </div>
 
     <div class="container">
         <h2>Serviço de Aluguel</h2>
@@ -36,13 +66,12 @@
             <button type="submit">Criar Aluguel</button>
         </form>
 
-        <hr style="margin: 20px 0;">
+        <hr>
 
         <h3>Listar Aluguéis</h3>
         <button onclick="listarAlugueis()">Buscar Todos os Aluguéis</button>
         <pre id="lista-alugueis">A lista de aluguéis aparecerá aqui...</pre>
     </div>
-
 
     <div class="container">
         <h2>Serviço de Usuários</h2>
@@ -56,7 +85,7 @@
             <button type="submit">Cadastrar</button>
         </form>
 
-        <hr style="margin: 20px 0;">
+        <hr>
         
         <form id="form-usuario-remocao">
             <h3>Remover Usuário</h3>
@@ -64,52 +93,122 @@
             <button type="submit" class="delete">Remover Usuário</button>
         </form>
         
-        <hr style="margin: 20px 0;">
+        <hr>
 
         <h3>Listar Usuários Cadastrados</h3>
         <button onclick="listarUsuarios()">Buscar Usuários</button>
         <pre id="lista-usuarios">A lista de usuários aparecerá aqui...</pre>
     </div>
 
-
     <script>
         // ================= URLs DAS APIs =================
-        const USUARIO_API_BASE_URL = 'https://servico-usuarios-production.up.railway.app';
-        const ALUGUEL_API_BASE_URL = 'URL_DO_SERVICO_DE_ALUGUEL_AQUI'; // <-- ADICIONAR QUANDO ESTIVER PRONTA
+        const USUARIO_API_BASE_URL = 'https://servico-usuarios-production-a5e2.up.railway.app';
+        const ALUGUEL_API_BASE_URL = 'URL_DO_SERVICO_DE_ALUGUEL_AQUI';
+        const LIVRO_API_BASE_URL = 'URL_DO_SERVICO_DE_LIVROS_AQUI'; // <-- ADICIONAR QUANDO ESTIVER PRONTA
 
         // ================= ELEMENTOS DO DOM =================
         const statusElement = document.getElementById('status');
         const errorElement = document.getElementById('error');
+
+        // --- Elementos de Livro ---
+        const bookListElement = document.getElementById('lista-livros');
+        const formLivroCadastro = document.getElementById('form-livro-cadastro');
+        const formLivroBuscar = document.getElementById('form-livro-buscar');
+
+        // --- Elementos de Aluguel ---
+        const aluguelListElement = document.getElementById('lista-alugueis');
+        const formAluguelCriar = document.getElementById('form-aluguel-criar');
 
         // --- Elementos de Usuário ---
         const userListElement = document.getElementById('lista-usuarios');
         const formUsuarioCadastro = document.getElementById('form-usuario-cadastro');
         const formUsuarioRemocao = document.getElementById('form-usuario-remocao');
         
-        // --- Elementos de Aluguel ---
-        const aluguelListElement = document.getElementById('lista-alugueis');
-        const formAluguelCriar = document.getElementById('form-aluguel-criar');
-
-
         // ================= FUNÇÕES GERAIS =================
+        function checkApiUrl(apiUrl, placeholder) {
+            if (apiUrl === placeholder) {
+                errorElement.textContent = `ERRO: A URL do serviço correspondente ainda não foi configurada.`;
+                return false;
+            }
+            return true;
+        }
+
         function clearMessages() {
             statusElement.textContent = '';
             errorElement.textContent = '';
         }
 
-        // ================= FUNÇÕES DO SERVIÇO DE ALUGUEL =================
+        // ================= FUNÇÕES DO SERVIÇO DE LIVROS =================
         
-        // LISTAR ALUGUÉIS (GET)
+        // LISTAR LIVROS (GET)
+        async function listarLivros() {
+            clearMessages();
+            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI')) return;
+            bookListElement.textContent = 'Buscando...';
+            try {
+                const response = await fetch(`${LIVRO_API_BASE_URL}/livros`);
+                if (!response.ok) throw new Error(`Erro: ${response.status}`);
+                const data = await response.json();
+                bookListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum livro encontrado.';
+            } catch (error) {
+                bookListElement.textContent = 'Falha ao buscar dados.';
+                errorElement.textContent = error.message;
+            }
+        }
+        
+        // BUSCAR LIVRO POR ID (GET)
+        formLivroBuscar.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI')) return;
+            const livroId = document.getElementById('livro-id-buscar').value;
+            bookListElement.textContent = 'Buscando...';
+            try {
+                const response = await fetch(`${LIVRO_API_BASE_URL}/livros/${livroId}`);
+                if (!response.ok) throw new Error(`Erro: ${response.status} (Livro não encontrado)`);
+                const data = await response.json();
+                bookListElement.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                bookListElement.textContent = `Falha ao buscar livro com ID ${livroId}.`;
+                errorElement.textContent = error.message;
+            }
+        });
+
+        // CADASTRAR LIVRO (POST)
+        formLivroCadastro.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI')) return;
+            
+            const novoLivro = {
+                id: document.getElementById('livro-id').value,
+                titulo: document.getElementById('livro-titulo').value,
+                autor: document.getElementById('livro-autor').value,
+                anoPublicacao: parseInt(document.getElementById('livro-ano').value)
+            };
+            try {
+                const response = await fetch(`${LIVRO_API_BASE_URL}/livros`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(novoLivro)
+                });
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                statusElement.textContent = `Livro "${novoLivro.titulo}" cadastrado com sucesso!`;
+                formLivroCadastro.reset();
+                listarLivros();
+            } catch (error) {
+                errorElement.textContent = `Falha ao cadastrar livro: ${error.message}`;
+            }
+        });
+
+
+        // ================= FUNÇÕES DO SERVIÇO DE ALUGUEL =================
         async function listarAlugueis() {
             clearMessages();
+            if (!checkApiUrl(ALUGUEL_API_BASE_URL, 'URL_DO_SERVICO_DE_ALUGUEL_AQUI')) return;
             aluguelListElement.textContent = 'Buscando...';
-            // AVISO: Esta função só funcionará quando a URL do serviço de aluguel for adicionada.
-            if (ALUGUEL_API_BASE_URL === 'URL_DO_SERVICO_DE_ALUGUEL_AQUI') {
-                aluguelListElement.textContent = 'ERRO: A URL do serviço de aluguel ainda não foi configurada.';
-                return;
-            }
             try {
-                const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis`); // Assumindo endpoint /alugueis
+                const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis`);
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
                 const data = await response.json();
                 aluguelListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum aluguel encontrado.';
@@ -119,23 +218,17 @@
             }
         }
         
-        // CRIAR ALUGUEL (POST)
         formAluguelCriar.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
-            if (ALUGUEL_API_BASE_URL === 'URL_DO_SERVICO_DE_ALUGUEL_AQUI') {
-                errorElement.textContent = 'ERRO: A URL do serviço de aluguel ainda não foi configurada.';
-                return;
-            }
-            
+            if (!checkApiUrl(ALUGUEL_API_BASE_URL, 'URL_DO_SERVICO_DE_ALUGUEL_AQUI')) return;
             const novoAluguel = {
                 usuarioId: document.getElementById('aluguel-usuario-id').value,
                 livroId: document.getElementById('aluguel-livro-id').value,
                 prazo: document.getElementById('aluguel-prazo').value
             };
-
             try {
-                const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis`, { // Assumindo endpoint /alugueis
+                const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(novoAluguel)
@@ -152,13 +245,9 @@
             }
         });
 
-
         // ================= FUNÇÕES DO SERVIÇO DE USUÁRIOS =================
-
-        // LISTAR USUÁRIOS (GET)
         async function listarUsuarios() {
             clearMessages();
-            userListElement.textContent = 'Buscando...';
             try {
                 const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios`);
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
@@ -170,7 +259,6 @@
             }
         }
 
-        // CADASTRAR USUÁRIO (POST)
         formUsuarioCadastro.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
@@ -196,15 +284,12 @@
             }
         });
 
-        // REMOVER USUÁRIO (DELETE)
         formUsuarioRemocao.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
             const idParaRemover = document.getElementById('usuario-id-remover').value;
             try {
-                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${idParaRemover}`, {
-                    method: 'DELETE'
-                });
+                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${idParaRemover}`, { method: 'DELETE' });
                 if (!response.ok) throw new Error(`Erro: ${response.status}. Usuário não encontrado.`);
                 statusElement.textContent = `Usuário com ID ${idParaRemover} removido com sucesso!`;
                 formUsuarioRemocao.reset();
