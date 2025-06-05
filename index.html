@@ -144,7 +144,7 @@
         const USUARIO_API_BASE_URL = 'https://servico-usuarios-production.up.railway.app';
         const ALUGUEL_API_BASE_URL = 'URL_DO_SERVICO_DE_ALUGUEL_AQUI';
         const LIVRO_API_BASE_URL = 'https://miocroservice-books-production.up.railway.app';
-        const PAGAMENTO_API_BASE_URL = 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI';
+        const PAGAMENTO_API_BASE_URL = 'https://microsservico-pagamento.onrender.com';
 
         // ================= ELEMENTOS DO DOM =================
         const statusElement = document.getElementById('status');
@@ -190,10 +190,10 @@
         
         async function listarFormasPagamento() {
             clearMessages();
-            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI', 'Pagamento')) return;
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'https://microsservico-pagamento.onrender.com', 'Pagamento')) return;
             paymentListElement.textContent = 'Buscando...';
             try {
-                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/formas`);
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos`);
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
                 const data = await response.json();
                 paymentListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhuma forma de pagamento encontrada.';
@@ -205,7 +205,7 @@
 
         formPagamentoExecutar.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI', 'Pagamento')) return;
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'https://microsservico-pagamento.onrender.com', 'Pagamento')) return;
             const novoPagamento = {
                 usuarioId: document.getElementById('pagamento-usuario-id').value,
                 valor: parseFloat(document.getElementById('pagamento-valor').value),
@@ -228,7 +228,7 @@
 
         formPagamentoCancelar.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
-            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'URL_DO_SERVICO_DE_PAGAMENTO_AQUI', 'Pagamento')) return;
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'https://microsservico-pagamento.onrender.com', 'Pagamento')) return;
             const pagamentoId = document.getElementById('pagamento-id-cancelar').value;
             try {
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/${pagamentoId}`, { method: 'DELETE' });
