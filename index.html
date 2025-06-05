@@ -118,6 +118,15 @@
             <input type="number" step="0.01" id="usuario-valor-saldo" placeholder="Valor a adicionar/subtrair (Ex: 25.50 ou -10.00)" required>
             <button type="submit">Atualizar Saldo</button>
         </form>
+
+        <hr>
+        <form id="form-usuario-verificar-inadimplencia">
+            <h3>Verificar Inadimplência</h3>
+            <input type="text" id="usuario-id-inadimplencia" placeholder="ID do usuário para verificar" required>
+            <button type="submit">Verificar Status</button>
+        </form>
+        <pre id="status-inadimplencia" style="margin-top: 5px;"></pre>
+
         <hr>
         <form id="form-usuario-remocao">
             <h3>Remover Usuário</h3>
@@ -160,6 +169,8 @@
         const formUsuarioCadastro = document.getElementById('form-usuario-cadastro');
         const formUsuarioRemocao = document.getElementById('form-usuario-remocao');
         const formUsuarioSaldo = document.getElementById('form-usuario-saldo');
+        const formUsuarioVerificarInadimplencia = document.getElementById('form-usuario-verificar-inadimplencia');
+        const statusInadimplenciaElement = document.getElementById('status-inadimplencia');
         
         // ================= FUNÇÕES GERAIS =================
         function checkApiUrl(apiUrl, placeholderText, serviceName) {
@@ -392,6 +403,46 @@
                 listarUsuarios();
             } catch (error) {
                 errorElement.textContent = `Falha ao atualizar saldo: ${error.message}`;
+            }
+        });
+
+        formUsuarioVerificarInadimplencia.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages(); // Limpa mensagens de status/erro globais
+            statusInadimplenciaElement.textContent = 'Verificando...'; // Limpa resultado anterior
+    
+            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SEU_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) { // Atualizado para usar o serviceName
+            statusInadimplenciaElement.textContent = 'URL da API não configurada.';
+            return;
+            }
+
+            const usuarioId = document.getElementById('usuario-id-inadimplencia').value;
+
+            try {
+                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${usuarioId}/inadimplencia`);
+
+                if (response.status === 404) {
+                    statusInadimplenciaElement.textContent = `Usuário com ID ${usuarioId} não encontrado.`;
+                    throw new Error(`Erro 404: Usuário não encontrado.`); // Lança para o catch
+                }
+                if (!response.ok) {
+                    statusInadimplenciaElement.textContent = `Erro ao verificar: ${response.status}`;
+                    throw new Error(`Erro: ${response.status}`); // Lança para o catch
+                }
+        
+                const data = await response.json(); // Espera-se {"inadimplente": true/false}
+        
+                if (data.inadimplente) {
+                    statusInadimplenciaElement.textContent = `O usuário ${usuarioId} ESTÁ inadimplente.`;
+                } else {
+                    statusInadimplenciaElement.textContent = `O usuário ${usuarioId} NÃO está inadimplente.`;
+                }
+        
+            } catch (error) {
+                // A mensagem de erro específica já foi definida antes de lançar
+                // Apenas logamos no console para depuração, se necessário
+                console.error('Falha ao verificar inadimplência:', error.message);
+                // errorElement.textContent = error.message; // Se quiser exibir no campo de erro global
             }
         });
 
