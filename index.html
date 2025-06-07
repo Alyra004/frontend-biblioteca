@@ -324,8 +324,8 @@
                 titulo: document.getElementById('livro-titulo').value,
                 autor: document.getElementById('livro-autor').value,
                 anoPublicacao: parseInt(document.getElementById('livro-ano').value),
-                quantidade: parseInt(document.getElementById('quantidade').value)
-            };
+                quantidade: parseInt(document.getElementById('livro-quantidade').value) 
+        };
             try {
                 const response = await fetch(`${LIVRO_API_BASE_URL}/livros`, {
                     method: 'POST',
