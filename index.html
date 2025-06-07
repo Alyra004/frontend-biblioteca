@@ -76,7 +76,7 @@
         </form>
         <hr>
         <form id="form-livro-disponibilidade">
-            <h3>VVerificar Disponibilidade de Livro</h3>
+            <h3>Verificar Disponibilidade de Livro</h3>
             <input type="text" id="livro-id-disponibilidade" placeholder="ID do livro para verificar" required>
             <button type="submit">Verificar Disponibilidade</button>
         </form>
@@ -264,7 +264,7 @@
                 errorElement.textContent = error.message;
             }
         }
-        
+
         formLivroBuscar.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
             if (!checkApiUrl(LIVRO_API_BASE_URL, 'http://miocroservice-books-production.up.railway.app', 'Livros')) return;
