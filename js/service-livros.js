@@ -1,90 +1,101 @@
 import { checkApiUrl, clearMessages } from './utils.js';
 
-export function initLivrosService(apiUrl, elements) {
+// O nome da função aqui deve ser o mesmo que você usa no 'import' do main.js
+export function initLivroService(apiUrl, elements) {
+
+    // --- FUNÇÕES DE LÓGICA ---
+
+    // Esta função agora usa os parâmetros 'apiUrl' e 'elements'
     async function listarLivros() {
-            clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'http://miocroservice-books-production.up.railway.app', 'Livros')) return;
-            bookListElement.textContent = 'Buscando...';
-            try {
-                const response = await fetch(`${LIVRO_API_BASE_URL}/livros`);
-                if (!response.ok) throw new Error(`Erro: ${response.status}`);
-                const data = await response.json();
-                bookListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum livro encontrado.';
-            } catch (error) {
-                bookListElement.textContent = 'Falha ao buscar dados.';
-                errorElement.textContent = error.message;
-            }
+        clearMessages();
+        if (!checkApiUrl(apiUrl, 'Livros')) return;
+        
+        elements.listElement.textContent = 'Buscando...';
+        try {
+            const response = await fetch(`${apiUrl}/livros`);
+            if (!response.ok) throw new Error(`Erro: ${response.status}`);
+            const data = await response.json();
+            elements.listElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum livro encontrado.';
+        } catch (error) {
+            elements.listElement.textContent = 'Falha ao buscar dados.';
+            document.getElementById('error').textContent = error.message;
         }
+    }
 
-        elements.formLivroBuscar.addEventListener('submit', async (event) => {
-            event.preventDefault(); clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'http://miocroservice-books-production.up.railway.app', 'Livros')) return;
-            const livroId = document.getElementById('livro-id-buscar').value;
-            bookListElement.textContent = 'Buscando...';
-            try {
-                const response = await fetch(`${LIVRO_API_BASE_URL}/livros/${livroId}`);
-                if (!response.ok) throw new Error(`Erro: ${response.status} (Livro não encontrado)`);
-                const data = await response.json();
-                bookListElement.textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                bookListElement.textContent = `Falha ao buscar livro com ID ${livroId}.`;
-                errorElement.textContent = error.message;
-            }
-        });
+    // --- ANEXANDO EVENTOS AOS ELEMENTOS ---
 
-        elements.formLivroDisponibilidade.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            clearMessages();
-            resultadoDisponibilidadeElement.textContent = 'Verificando...';
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI', 'Livros')) {
-                resultadoDisponibilidadeElement.textContent = 'URL da API de Livros não configurada.';
-                return;
-            }
-            const livroId = document.getElementById('livro-id-disponibilidade').value;
-            try {
-                const response = await fetch(`${LIVRO_API_BASE_URL}/livros/${livroId}`);
-                if (response.status === 404) {
-                    resultadoDisponibilidadeElement.textContent = `Livro com ID ${livroId} não foi encontrado.`;
-                    return;
-                }
-                if (!response.ok) {
-                    throw new Error(`Erro na API: ${response.status}`);
-                }
-                const data = await response.json();
-                if (data.disponivel) {
-                    resultadoDisponibilidadeElement.textContent = `✅ O livro "${data.titulo}" (ID: ${data.id}) ESTÁ disponível.`;
-                } else {
-                    resultadoDisponibilidadeElement.textContent = `❌ O livro "${data.titulo}" (ID: ${data.id}) NÃO ESTÁ disponível.`;
-            }
-            } catch (error) {
-                resultadoDisponibilidadeElement.textContent = `Falha ao verificar disponibilidade.`;
-                errorElement.textContent = error.message; // Exibe o erro técnico no campo de erro global
-                console.error('Erro detalhado:', error);
-            }
-        });
+    // Anexa a função ao botão de listar
+    elements.listarBtn.addEventListener('click', listarLivros);
 
-        elements.formLivroCadastro.addEventListener('submit', async (event) => {
-            event.preventDefault(); clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'http://miocroservice-books-production.up.railway.app', 'Livros')) return;
-            const novoLivro = {
-                id: document.getElementById('livro-id').value,
-                titulo: document.getElementById('livro-titulo').value,
-                autor: document.getElementById('livro-autor').value,
-                anoPublicacao: parseInt(document.getElementById('livro-ano').value),
-                quantidade: parseInt(document.getElementById('livro-quantidade').value) 
+    // Anexa ao formulário de buscar por ID
+    elements.formBuscar.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearMessages();
+        if (!checkApiUrl(apiUrl, 'Livros')) return;
+        
+        const livroId = document.getElementById('livro-id-buscar').value;
+        elements.listElement.textContent = 'Buscando...';
+        try {
+            const response = await fetch(`${apiUrl}/livros/${livroId}`);
+            if (!response.ok) throw new Error(`Erro: ${response.status} (Livro não encontrado)`);
+            const data = await response.json();
+            elements.listElement.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+            elements.listElement.textContent = `Falha ao buscar livro com ID ${livroId}.`;
+            document.getElementById('error').textContent = error.message;
+        }
+    });
+
+    // Anexa ao formulário de verificar disponibilidade
+    elements.formDisponibilidade.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearMessages();
+        elements.resultadoDisponibilidadeElement.textContent = 'Verificando...';
+        if (!checkApiUrl(apiUrl, 'Livros')) return;
+        
+        const livroId = document.getElementById('livro-id-disponibilidade').value;
+        try {
+            const response = await fetch(`${apiUrl}/livros/${livroId}`);
+            if (response.status === 404) throw new Error(`Livro com ID ${livroId} não foi encontrado.`);
+            if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
+            
+            const data = await response.json();
+            if (data.disponivel) {
+                elements.resultadoDisponibilidadeElement.textContent = `✅ O livro "${data.titulo}" (ID: ${data.id}) ESTÁ disponível.`;
+            } else {
+                elements.resultadoDisponibilidadeElement.textContent = `❌ O livro "${data.titulo}" (ID: ${data.id}) NÃO ESTÁ disponível.`;
+            }
+        } catch (error) {
+            elements.resultadoDisponibilidadeElement.textContent = 'Falha ao verificar.';
+            document.getElementById('error').textContent = error.message;
+        }
+    });
+
+    // Anexa ao formulário de cadastro
+    elements.formCadastro.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearMessages();
+        if (!checkApiUrl(apiUrl, 'Livros')) return;
+
+        const novoLivro = {
+            id: document.getElementById('livro-id').value,
+            titulo: document.getElementById('livro-titulo').value,
+            autor: document.getElementById('livro-autor').value,
+            anoPublicacao: parseInt(document.getElementById('livro-ano').value),
+            quantidade: parseInt(document.getElementById('livro-quantidade').value) 
         };
-            try {
-                const response = await fetch(`${LIVRO_API_BASE_URL}/livros`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(novoLivro)
-                });
-                if (!response.ok) throw new Error(`Erro ${response.status}`);
-                statusElement.textContent = `Livro "${novoLivro.titulo}" cadastrado com sucesso!`;
-                formLivroCadastro.reset();
-                listarLivros();
-            } catch (error) {
-                errorElement.textContent = `Falha ao cadastrar livro: ${error.message}`;
-            }
-        });
+        try {
+            const response = await fetch(`${apiUrl}/livros`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(novoLivro)
+            });
+            if (!response.ok) throw new Error(`Erro ${response.status}`);
+            document.getElementById('status').textContent = `Livro "${novoLivro.titulo}" cadastrado com sucesso!`;
+            elements.formCadastro.reset();
+            await listarLivros();
+        } catch (error) {
+            document.getElementById('error').textContent = `Falha ao cadastrar livro: ${error.message}`;
+        }
+    });
 }
