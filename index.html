@@ -66,6 +66,7 @@
             <input type="text" id="livro-titulo" placeholder="Título do Livro" required>
             <input type="text" id="livro-autor" placeholder="Autor" required>
             <input type="number" id="livro-ano" placeholder="Ano de Publicação" required>
+            <input type="number" id="livro-ano" placeholder="Quantidade" required>
             <button type="submit">Cadastrar Livro</button>
         </form>
         <hr>
@@ -319,7 +320,8 @@
                 id: document.getElementById('livro-id').value,
                 titulo: document.getElementById('livro-titulo').value,
                 autor: document.getElementById('livro-autor').value,
-                anoPublicacao: parseInt(document.getElementById('livro-ano').value)
+                anoPublicacao: parseInt(document.getElementById('livro-ano').value),
+                quantidade: parseInt(document.getElementById('quantidade').value)
             };
             try {
                 const response = await fetch(`${LIVRO_API_BASE_URL}/livros`, {
