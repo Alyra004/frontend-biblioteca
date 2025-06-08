@@ -278,8 +278,7 @@
         async function listarPagamentos() {
             clearMessages();
             if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
-            
-            paymentListElement.textContent = 'Buscando pagamentos...';
+            paymentListElement.textContent = 'Buscando...';
             try {
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos`);
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
@@ -293,7 +292,7 @@
         btnListarPagamentos.addEventListener('click', listarPagamentos);
 
 
-        // CRIAR PAGAMENTO (POST /pagamentos/cartao-credito, etc.)
+        // CRIAR PAGAMENTO (chama as rotas diretas /pagamentos/pix, etc.)
         formPagamentoCriar.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
@@ -302,25 +301,25 @@
             const metodo = document.getElementById('pagamento-metodo').value;
             const endpoint = `/pagamentos/${metodo}`;
             
+            // Monta o corpo (body) com os dados específicos de cada método
             let dadosPagamento = {
                 valor: parseFloat(document.getElementById('pagamento-valor').value)
-                // O campo usuarioId não parece ser esperado pelo body da criação, e sim os detalhes do pagamento
             };
 
-            // ATENÇÃO: Você precisará adicionar estes campos no seu formulário HTML
+            // ATENÇÃO: Adicione estes inputs no seu HTML dentro do form 'form-pagamento-criar'
             if (metodo === 'pix') {
-                dadosPagamento.chavePix = document.getElementById('pagamento-chave-pix').value;
+                dadosPagamento.chavePix = document.getElementById('pagamento-chave-pix')?.value;
             } else if (metodo === 'cartao-credito' || metodo === 'cartao-debito') {
-                dadosPagamento.numeroCartao = document.getElementById('pagamento-numero-cartao').value;
-                dadosPagamento.nomeTitular = document.getElementById('pagamento-nome-titular').value;
-                dadosPagamento.codigoSeguranca = document.getElementById('pagamento-codigo-seguranca').value;
-                dadosPagamento.validade = document.getElementById('pagamento-validade').value;
+                dadosPagamento.numeroCartao = document.getElementById('pagamento-numero-cartao')?.value;
+                dadosPagamento.nomeTitular = document.getElementById('pagamento-nome-titular')?.value;
+                dadosPagamento.codigoSeguranca = document.getElementById('pagamento-codigo-seguranca')?.value;
+                dadosPagamento.validade = document.getElementById('pagamento-validade')?.value;
             }
             if (metodo === 'cartao-credito') {
-                dadosPagamento.parcelas = parseInt(document.getElementById('pagamento-parcelas').value);
+                dadosPagamento.parcelas = parseInt(document.getElementById('pagamento-parcelas')?.value);
             }
             if (metodo === 'cartao-debito') {
-                dadosPagamento.banco = document.getElementById('pagamento-banco').value;
+                dadosPagamento.banco = document.getElementById('pagamento-banco')?.value;
             }
 
             try {
@@ -338,6 +337,7 @@
                 errorElement.textContent = `Falha ao criar pagamento: ${error.message}`;
             }
         });
+
 
 
         // EFETUAR PAGAMENTO (POST /pagamentos/:id/efetuar)
