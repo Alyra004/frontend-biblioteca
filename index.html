@@ -340,7 +340,7 @@
             const pagamentoId = document.getElementById('pagamento-id-consultar').value;
             paymentListElement.textContent = `Buscando pagamento com ID ${pagamentoId}...`;
             try {
-                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/${pagamentoId}`);
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/${pagamentoId}`);
                 if (!response.ok) throw new Error(`Erro ${response.status}: Pagamento não encontrado`);
                 const data = await response.json();
                 paymentListElement.textContent = JSON.stringify(data, null, 2);
