@@ -26,7 +26,6 @@ graph TD;
         DB_Pagamento["🗄️<br>DB Pagamento"]
     end
 
-    %% Conexões
     Browser --> Frontend;
     
     Frontend -->|Requisições HTTP/API| ServiceUsuarios;
@@ -39,11 +38,11 @@ graph TD;
     ServiceAluguel <--> DB_Aluguel;
     ServicePagamento <--> DB_Pagamento;
     
-    %% Comunicação entre serviços (Exemplo)
     ServiceAluguel -->|Verifica usuário| ServiceUsuarios;
     ServiceAluguel -->|Verifica livro| ServiceLivros;
 
-    %% Estilos
-    style Frontend fill:#cde4ff,stroke:#6b95d4,stroke-width:2px;
+    style Frontend fill:#71919B,stroke:#6b95d4,stroke-width:2px;
     style Browser fill:#f9f9f9,stroke:#333;
+    style Frontend color:#1D2E33;
+    style Browser color:#1D2E33;
 ```
