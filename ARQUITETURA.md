@@ -1,3 +1,4 @@
+```mermaid
 graph TD;
     subgraph "Usuário"
         Browser["💻<br>Navegador do Usuário"]
@@ -45,3 +46,4 @@ graph TD;
     %% Estilos
     style Frontend fill:#cde4ff,stroke:#6b95d4,stroke-width:2px;
     style Browser fill:#f9f9f9,stroke:#333;
+```
