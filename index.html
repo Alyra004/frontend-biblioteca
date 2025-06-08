@@ -278,8 +278,10 @@
         async function listarPagamentos() {
             clearMessages();
             if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
+            
             paymentListElement.textContent = 'Buscando...';
             try {
+                // CORREÇÃO: Adicionado o caminho /pagamentos ao final da URL
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos`);
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
                 const data = await response.json();
@@ -291,8 +293,6 @@
         }
         btnListarPagamentos.addEventListener('click', listarPagamentos);
 
-
-        // CRIAR PAGAMENTO (chama as rotas diretas /pagamentos/pix, etc.)
         formPagamentoCriar.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
@@ -301,27 +301,15 @@
             const metodo = document.getElementById('pagamento-metodo').value;
             const endpoint = `/pagamentos/${metodo}`;
             
-            // Monta o corpo (body) com os dados específicos de cada método
+            // Body da requisição (você precisará adicionar os inputs extras no HTML)
             let dadosPagamento = {
                 valor: parseFloat(document.getElementById('pagamento-valor').value)
             };
-
-            // ATENÇÃO: Adicione estes inputs no seu HTML dentro do form 'form-pagamento-criar'
-            if (metodo === 'pix') {
-                dadosPagamento.chavePix = document.getElementById('pagamento-chave-pix')?.value;
-            } else if (metodo === 'cartao-credito' || metodo === 'cartao-debito') {
-                dadosPagamento.numeroCartao = document.getElementById('pagamento-numero-cartao')?.value;
-                dadosPagamento.nomeTitular = document.getElementById('pagamento-nome-titular')?.value;
-                dadosPagamento.codigoSeguranca = document.getElementById('pagamento-codigo-seguranca')?.value;
-                dadosPagamento.validade = document.getElementById('pagamento-validade')?.value;
-            }
-            if (metodo === 'cartao-credito') {
-                dadosPagamento.parcelas = parseInt(document.getElementById('pagamento-parcelas')?.value);
-            }
-            if (metodo === 'cartao-debito') {
-                dadosPagamento.banco = document.getElementById('pagamento-banco')?.value;
-            }
-
+            // Exemplo de como pegar outros dados:
+            // if (metodo === 'pix') {
+            //     dadosPagamento.chavePix = document.getElementById('pagamento-chave-pix')?.value;
+            // }
+            
             try {
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}${endpoint}`, {
                     method: 'POST',
@@ -338,9 +326,6 @@
             }
         });
 
-
-
-        // EFETUAR PAGAMENTO (POST /pagamentos/:id/efetuar)
         formPagamentoEfetuar.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
@@ -360,8 +345,6 @@
             }
         });
 
-
-        // CONSULTAR PAGAMENTO (GET /pagamentos/:id)
         formPagamentoConsultar.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
@@ -378,12 +361,10 @@
             }
         });
 
-
-        // CANCELAR PAGAMENTO (POST /pagamentos/:id/cancelar)
         formPagamentoCancelar.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
-            if (!checkApiUrl(PAGAMENTO_API_BSE_URL)) return;
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
             const pagamentoId = document.getElementById('pagamento-id-cancelar').value;
             try {
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/${pagamentoId}/cancelar`, {
