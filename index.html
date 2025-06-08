@@ -272,7 +272,7 @@
             if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
             paymentListElement.textContent = 'Buscando...';
             try {
-                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/`);
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos`);
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
                 const data = await response.json();
                 paymentListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum pagamento encontrado.';
