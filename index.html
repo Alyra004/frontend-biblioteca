@@ -137,6 +137,7 @@
             <h3>Criar Novo Aluguel</h3>
             <input type="text" id="aluguel-usuario-id" placeholder="ID do Usuário" required>
             <input type="text" id="aluguel-livro-id" placeholder="ID do Livro" required>
+            <input type="number" id="aluguel-prazo" placeholder="Prazo (em dias)" required>
             <button type="submit">Criar Aluguel</button>
         </form>
         
@@ -586,10 +587,14 @@
             event.preventDefault();
             clearMessages();
             if (!checkApiUrl(ALUGUEL_API_BASE_URL)) return;
+            
+            // CORREÇÃO: Montando o body com todos os campos necessários
             const novoAluguel = {
                 usuarioId: document.getElementById('aluguel-usuario-id').value,
-                livroId: document.getElementById('aluguel-livro-id').value
+                livroId: document.getElementById('aluguel-livro-id').value,
+                prazo: parseInt(document.getElementById('aluguel-prazo').value) // Campo adicionado
             };
+            
             try {
                 const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis`, {
                     method: 'POST',
@@ -597,10 +602,11 @@
                     body: JSON.stringify(novoAluguel)
                 });
                 if (!response.ok) {
-                   const errorData = await response.json();
-                   throw new Error(`Erro ${response.status}: ${errorData.mensagem || 'Erro desconhecido'}`);
+                const errorData = await response.json();
+                throw new Error(`Erro ${response.status}: ${errorData.mensagem || 'Erro desconhecido'}`);
                 }
-                statusElement.textContent = `Aluguel criado com sucesso!`;
+                const data = await response.json();
+                statusElement.textContent = `Aluguel (ID: ${data._id || data.id}) criado com sucesso!`;
                 formAluguelCriar.reset();
                 await listarAlugueis();
             } catch (error) {
