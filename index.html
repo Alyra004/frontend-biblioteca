@@ -400,9 +400,11 @@
         });
 
         // ================= FUNÇÕES DO SERVIÇO DE LIVROS =================
+        // LISTAR LIVROS (GET /livros)
         async function listarLivros() {
             clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'http://miocroservice-books-production.up.railway.app', 'Livros')) return;
+            if (!checkApiUrl(LIVRO_API_BASE_URL)) return;
+            
             bookListElement.textContent = 'Buscando...';
             try {
                 const response = await fetch(`${LIVRO_API_BASE_URL}/livros`);
@@ -414,12 +416,47 @@
                 errorElement.textContent = error.message;
             }
         }
+        // Conectando o botão à sua função
+        btnListarLivros.addEventListener('click', listarLivros);
 
+
+        // CADASTRAR LIVRO (POST /livros)
+        formLivroCadastro.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(LIVRO_API_BASE_URL)) return;
+
+            const novoLivro = {
+                id: document.getElementById('livro-id').value,
+                titulo: document.getElementById('livro-titulo').value,
+                autor: document.getElementById('livro-autor').value,
+                anoPublicacao: parseInt(document.getElementById('livro-ano').value),
+                quantidade: parseInt(document.getElementById('livro-quantidade').value) 
+            };
+            try {
+                const response = await fetch(`${LIVRO_API_BASE_URL}/livros`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(novoLivro)
+                });
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                statusElement.textContent = `Livro "${novoLivro.titulo}" cadastrado com sucesso!`;
+                formLivroCadastro.reset();
+                await listarLivros(); // Atualiza a lista após o cadastro
+            } catch (error) {
+                errorElement.textContent = `Falha ao cadastrar livro: ${error.message}`;
+            }
+        });
+
+
+        // BUSCAR LIVRO POR ID (GET /livros/:id)
         formLivroBuscar.addEventListener('submit', async (event) => {
-            event.preventDefault(); clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'http://miocroservice-books-production.up.railway.app', 'Livros')) return;
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(LIVRO_API_BASE_URL)) return;
+
             const livroId = document.getElementById('livro-id-buscar').value;
-            bookListElement.textContent = 'Buscando...';
+            bookListElement.textContent = `Buscando livro com ID ${livroId}...`;
             try {
                 const response = await fetch(`${LIVRO_API_BASE_URL}/livros/${livroId}`);
                 if (!response.ok) throw new Error(`Erro: ${response.status} (Livro não encontrado)`);
@@ -431,59 +468,29 @@
             }
         });
 
+
+        // VERIFICAR DISPONIBILIDADE (GET /livros/:id)
         formLivroDisponibilidade.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
             resultadoDisponibilidadeElement.textContent = 'Verificando...';
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'URL_DO_SERVICO_DE_LIVROS_AQUI', 'Livros')) {
-                resultadoDisponibilidadeElement.textContent = 'URL da API de Livros não configurada.';
-                return;
-            }
+            if (!checkApiUrl(LIVRO_API_BASE_URL)) return;
+
             const livroId = document.getElementById('livro-id-disponibilidade').value;
             try {
                 const response = await fetch(`${LIVRO_API_BASE_URL}/livros/${livroId}`);
-                if (response.status === 404) {
-                    resultadoDisponibilidadeElement.textContent = `Livro com ID ${livroId} não foi encontrado.`;
-                    return;
-                }
-                if (!response.ok) {
-                    throw new Error(`Erro na API: ${response.status}`);
-                }
+                if (response.status === 404) throw new Error(`Livro com ID ${livroId} não foi encontrado.`);
+                if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
+                
                 const data = await response.json();
                 if (data.disponivel) {
                     resultadoDisponibilidadeElement.textContent = `✅ O livro "${data.titulo}" (ID: ${data.id}) ESTÁ disponível.`;
                 } else {
                     resultadoDisponibilidadeElement.textContent = `❌ O livro "${data.titulo}" (ID: ${data.id}) NÃO ESTÁ disponível.`;
-            }
+                }
             } catch (error) {
-                resultadoDisponibilidadeElement.textContent = `Falha ao verificar disponibilidade.`;
-                errorElement.textContent = error.message; // Exibe o erro técnico no campo de erro global
-                console.error('Erro detalhado:', error);
-            }
-        });
-
-        formLivroCadastro.addEventListener('submit', async (event) => {
-            event.preventDefault(); clearMessages();
-            if (!checkApiUrl(LIVRO_API_BASE_URL, 'http://miocroservice-books-production.up.railway.app', 'Livros')) return;
-            const novoLivro = {
-                id: document.getElementById('livro-id').value,
-                titulo: document.getElementById('livro-titulo').value,
-                autor: document.getElementById('livro-autor').value,
-                anoPublicacao: parseInt(document.getElementById('livro-ano').value),
-                quantidade: parseInt(document.getElementById('livro-quantidade').value) 
-        };
-            try {
-                const response = await fetch(`${LIVRO_API_BASE_URL}/livros`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(novoLivro)
-                });
-                if (!response.ok) throw new Error(`Erro ${response.status}`);
-                statusElement.textContent = `Livro "${novoLivro.titulo}" cadastrado com sucesso!`;
-                formLivroCadastro.reset();
-                listarLivros();
-            } catch (error) {
-                errorElement.textContent = `Falha ao cadastrar livro: ${error.message}`;
+                resultadoDisponibilidadeElement.textContent = 'Falha ao verificar.';
+                errorElement.textContent = error.message;
             }
         });
 
