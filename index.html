@@ -281,11 +281,21 @@
             
             paymentListElement.textContent = 'Buscando...';
             try {
-                // CORREÇÃO: Adicionado o caminho /pagamentos ao final da URL
-                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos`);
+                // CORREÇÃO: Adicionamos os 'headers' para sermos mais explícitos
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
+                
                 const data = await response.json();
+                
                 paymentListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum pagamento encontrado.';
+
             } catch (error) {
                 paymentListElement.textContent = 'Falha ao buscar dados.';
                 errorElement.textContent = error.message;
