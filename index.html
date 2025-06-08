@@ -45,7 +45,7 @@
 
             <hr>
 
-            <form id="form-pagamento-efetuar">
+            <form id="form-pagamento-criar">
                 <h3>Efetuar Pagamento Existente</h3>
                 <input type="text" id="pagamento-id-efetuar" placeholder="ID do pagamento a ser EFETUADO" required>
                 <button type="submit">Efetuar</button>
@@ -325,12 +325,14 @@
 
         
         // ===============FUNÇÕES DO SERVIÇO DE PAGAMENTO===================
-        // LISTAR PAGAMENTOS (GET /)
+                // LISTAR PAGAMENTOS (GET /)
         async function listarPagamentos() {
             clearMessages();
             if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
-            paymentListElement.textContent = 'Buscando...';
+            
+            paymentListElement.textContent = 'Buscando pagamentos...';
             try {
+                // A API de pagamentos usa a raiz (/) para listar
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}/`);
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
                 const data = await response.json();
@@ -340,22 +342,25 @@
                 errorElement.textContent = error.message;
             }
         }
+        // Anexa a função ao botão
         btnListarPagamentos.addEventListener('click', listarPagamentos);
 
 
         // CRIAR PAGAMENTO (POST /cartao-credito, /pix, etc.)
+        // Nota: Seu HTML usa o id 'form-pagamento-executar', então usaremos essa variável.
         formPagamentoExecutar.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
             if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
-            
+
             const metodo = document.getElementById('pagamento-metodo').value;
-            const endpoint = `/${metodo}`; // Monta a rota: /cartao-credito
-            
+            const endpoint = `/${metodo}`; // Monta a rota: /cartao-credito, /pix, etc.
+
             const novoPagamento = {
                 usuarioId: document.getElementById('pagamento-usuario-id').value,
                 valor: parseFloat(document.getElementById('pagamento-valor').value)
             };
+
             try {
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}${endpoint}`, {
                     method: 'POST',
@@ -364,7 +369,7 @@
                 });
                 if (!response.ok) throw new Error(`Erro ${response.status}`);
                 const data = await response.json();
-                statusElement.textContent = `Pagamento (ID: ${data._id}) criado com sucesso!`;
+                statusElement.textContent = `Pagamento (ID: ${data._id || data.id}) criado com sucesso!`;
                 formPagamentoExecutar.reset();
                 await listarPagamentos();
             } catch (error) {
@@ -373,64 +378,64 @@
         });
 
 
-// EFETUAR PAGAMENTO (POST /:id/efetuar)
-formPagamentoEfetuar.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    clearMessages();
-    if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
-    const pagamentoId = document.getElementById('pagamento-id-efetuar').value;
-    try {
-        const response = await fetch(`${PAGAMENTO_API_BASE_URL}/${pagamentoId}/efetuar`, {
-            method: 'POST'
+        // EFETUAR PAGAMENTO (POST /:id/efetuar)
+        formPagamentoEfetuar.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
+            const pagamentoId = document.getElementById('pagamento-id-efetuar').value;
+            try {
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/${pagamentoId}/efetuar`, {
+                    method: 'POST'
+                });
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                const data = await response.json();
+                statusElement.textContent = data.mensagem || `Pagamento com ID ${pagamentoId} efetuado com sucesso.`;
+                formPagamentoEfetuar.reset();
+                await listarPagamentos();
+            } catch (error) {
+                errorElement.textContent = `Falha ao efetuar pagamento: ${error.message}`;
+            }
         });
-        if (!response.ok) throw new Error(`Erro ${response.status}`);
-        const data = await response.json();
-        statusElement.textContent = data.mensagem || `Pagamento com ID ${pagamentoId} efetuado com sucesso.`;
-        formPagamentoEfetuar.reset();
-        await listarPagamentos();
-    } catch (error) {
-        errorElement.textContent = `Falha ao efetuar pagamento: ${error.message}`;
-    }
-});
 
 
-// CONSULTAR PAGAMENTO (GET /:id)
-formPagamentoConsultar.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    clearMessages();
-    if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
-    const pagamentoId = document.getElementById('pagamento-id-consultar').value;
-    paymentListElement.textContent = `Buscando pagamento com ID ${pagamentoId}...`;
-    try {
-        const response = await fetch(`${PAGAMENTO_API_BASE_URL}/${pagamentoId}`);
-        if (!response.ok) throw new Error(`Erro ${response.status}: Pagamento não encontrado`);
-        const data = await response.json();
-        paymentListElement.textContent = JSON.stringify(data, null, 2);
-    } catch (error) {
-        errorElement.textContent = `Falha ao consultar pagamento: ${error.message}`;
-    }
-});
-
-
-// CANCELAR PAGAMENTO (POST /:id/cancelar)
-formPagamentoCancelar.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    clearMessages();
-    if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
-    const pagamentoId = document.getElementById('pagamento-id-cancelar').value;
-    try {
-        const response = await fetch(`${PAGAMENTO_API_BASE_URL}/${pagamentoId}/cancelar`, {
-            method: 'POST'
+        // CONSULTAR PAGAMENTO (GET /:id)
+        formPagamentoConsultar.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
+            const pagamentoId = document.getElementById('pagamento-id-consultar').value;
+            paymentListElement.textContent = `Buscando pagamento com ID ${pagamentoId}...`;
+            try {
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/${pagamentoId}`);
+                if (!response.ok) throw new Error(`Erro ${response.status}: Pagamento não encontrado`);
+                const data = await response.json();
+                paymentListElement.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                errorElement.textContent = `Falha ao consultar pagamento: ${error.message}`;
+            }
         });
-        if (!response.ok) throw new Error(`Erro ${response.status}`);
-        const data = await response.json();
-        statusElement.textContent = data.mensagem || `Pagamento com ID ${pagamentoId} cancelado.`;
-        formPagamentoCancelar.reset();
-        await listarPagamentos();
-    } catch (error) {
-        errorElement.textContent = `Falha ao cancelar pagamento: ${error.message}`;
-    }
-});
+
+
+        // CANCELAR PAGAMENTO (POST /:id/cancelar)
+        formPagamentoCancelar.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
+            const pagamentoId = document.getElementById('pagamento-id-cancelar').value;
+            try {
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/${pagamentoId}/cancelar`, {
+                    method: 'POST'
+                });
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                const data = await response.json();
+                statusElement.textContent = data.mensagem || `Pagamento com ID ${pagamentoId} cancelado.`;
+                formPagamentoCancelar.reset();
+                await listarPagamentos();
+            } catch (error) {
+                errorElement.textContent = `Falha ao cancelar pagamento: ${error.message}`;
+            }
+        });
 
         // ================= FUNÇÕES DO SERVIÇO DE LIVROS =================
         async function listarLivros() {
