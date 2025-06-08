@@ -32,14 +32,34 @@
         
         <form id="form-pagamento-criar">
             <h3>Criar Novo Pagamento</h3>
-            <input type="text" id="pagamento-usuario-id" placeholder="ID do Usuário para o pagamento" required>
+            
             <input type="number" id="pagamento-valor" placeholder="Valor (Ex: 25.50)" step="0.01" required>
             <select id="pagamento-metodo" required>
-                <option value="" disabled selected>Selecione o método de criação...</option>
+                <option value="" disabled selected>Selecione o método de pagamento...</option>
+                <option value="pix">PIX</option>
                 <option value="cartao-credito">Cartão de Crédito</option>
                 <option value="cartao-debito">Cartão de Débito</option>
-                <option value="pix">PIX</option>
             </select>
+
+            <div id="campos-pix" style="display: none;">
+                <input type="text" id="pagamento-chave-pix" placeholder="Chave PIX">
+            </div>
+
+            <div id="campos-cartao" style="display: none;">
+                <input type="text" id="pagamento-numero-cartao" placeholder="Número do Cartão">
+                <input type="text" id="pagamento-nome-titular" placeholder="Nome do Titular">
+                <input type="text" id="pagamento-validade" placeholder="Validade (MM/AA)">
+                <input type="text" id="pagamento-codigo-seguranca" placeholder="Código de Segurança (CVV)">
+            </div>
+
+            <div id="campos-credito" style="display: none;">
+                <input type="number" id="pagamento-parcelas" placeholder="Número de Parcelas">
+            </div>
+
+            <div id="campos-debito" style="display: none;">
+                <input type="text" id="pagamento-banco" placeholder="Nome do Banco">
+            </div>
+
             <button type="submit">Criar Pagamento</button>
         </form>
 
@@ -230,6 +250,11 @@
         const formPagamentoConsultar = document.getElementById('form-pagamento-consultar');
         const formPagamentoCancelar = document.getElementById('form-pagamento-cancelar');
         const btnListarPagamentos = document.getElementById('btn-listar-pagamentos');
+        const seletorMetodoPagamento = document.getElementById('pagamento-metodo');
+        const camposPix = document.getElementById('campos-pix');
+        const camposCartao = document.getElementById('campos-cartao');
+        const camposCredito = document.getElementById('campos-credito');
+        const camposDebito = document.getElementById('campos-debito');
 
 
         // --- Livro ---
@@ -480,6 +505,27 @@
             } catch (error) {
                 resultadoDisponibilidadeElement.textContent = 'Falha ao verificar.';
                 errorElement.textContent = error.message;
+            }
+        });
+
+        seletorMetodoPagamento.addEventListener('change', (event) => {
+            const metodoSelecionado = event.target.value;
+
+            // Esconde todos os campos específicos primeiro
+            camposPix.style.display = 'none';
+            camposCartao.style.display = 'none';
+            camposCredito.style.display = 'none';
+            camposDebito.style.display = 'none';
+
+            // Mostra os campos relevantes
+            if (metodoSelecionado === 'pix') {
+                camposPix.style.display = 'block';
+            } else if (metodoSelecionado === 'cartao-credito') {
+                camposCartao.style.display = 'block';
+                camposCredito.style.display = 'block';
+            } else if (metodoSelecionado === 'cartao-debito') {
+                camposCartao.style.display = 'block';
+                camposDebito.style.display = 'block';
             }
         });
 
