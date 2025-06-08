@@ -281,20 +281,18 @@
             
             paymentListElement.textContent = 'Buscando...';
             try {
-                // CORREÇÃO: Adicionamos os 'headers' para sermos mais explícitos
-                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos`, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
-
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos`);
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
                 
-                const data = await response.json();
-                
-                paymentListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum pagamento encontrado.';
+                const data = await response.json(); // data é um objeto como { total: X, pagamentos: [...] }
+
+                // CORREÇÃO: Verificamos se a propriedade 'pagamentos' existe e se o seu length > 0
+                if (data.pagamentos && data.pagamentos.length > 0) {
+                    // CORREÇÃO: Exibimos apenas o array de pagamentos, que está dentro do objeto data
+                    paymentListElement.textContent = JSON.stringify(data.pagamentos, null, 2);
+                } else {
+                    paymentListElement.textContent = 'Nenhum pagamento encontrado.';
+                }
 
             } catch (error) {
                 paymentListElement.textContent = 'Falha ao buscar dados.';
