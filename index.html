@@ -28,42 +28,47 @@
     <p id="error"></p>
     
     <div class="container">
-        <h2>Serviço de Pagamento</h2>
-        <form id="form-pagamento-executar">
-            <h3>Executar Novo Pagamento</h3>
-            <input type="text" id="pagamento-usuario-id" placeholder="ID do Usuário" required>
-            <input type="number" id="pagamento-valor" placeholder="Valor (Ex: 25.50)" step="0.01" required>
-            <select id="pagamento-metodo" required>
-                <option value="" disabled selected>Selecione o método...</option>
-                <option value="cartao-credito">Cartão de Crédito</option>
-                <option value="cartao-debito">Cartão de Débito</option>
-                <option value="pix">PIX</option>
-            </select>
-            <button type="submit">Efetuar Pagamento</button>
-        </form>
-        <hr>
-        <form id="form-pagamento-cancelar">
-            <h3>Cancelar Pagamento</h3>
-            <input type="text" id="pagamento-id-cancelar" placeholder="ID do pagamento a ser cancelado" required>
-            <button type="submit" class="delete">Cancelar Pagamento</button>
-        </form>
-        <hr>
-        <h3>Listar Pagamentos</h3>
-        <button id="btn-listar-pagamentos">Buscar Todos os Pagamentos</button>
-        <pre id="lista-pagamentos">As informações de pagamento aparecerão aqui...</pre>
-    </div>
-
-    <div class="container">
-        <h2>Serviço de Livros</h2>
-        </div>
-    
-    <div class="container">
         <h2>Serviço de Aluguel</h2>
-        </div>
+        
+        <form id="form-aluguel-criar">
+            <h3>Criar Novo Aluguel</h3>
+            <input type="text" id="aluguel-usuario-id" placeholder="ID do Usuário" required>
+            <input type="text" id="aluguel-livro-id" placeholder="ID do Livro" required>
+            <button type="submit">Criar Aluguel</button>
+        </form>
+        
+        <hr>
 
-    <div class="container">
-        <h2>Serviço de Usuários</h2>
-        </div>
+        <form id="form-aluguel-renovar">
+            <h3>Renovar Aluguel</h3>
+            <input type="text" id="aluguel-id-renovar" placeholder="ID do Aluguel a ser renovado" required>
+            <input type="number" id="aluguel-novo-prazo" placeholder="Novo Prazo (em dias)" required>
+            <button type="submit">Renovar</button>
+        </form>
+        
+        <hr>
+
+        <form id="form-aluguel-devolver">
+            <h3>Devolver Livro</h3>
+            <input type="text" id="aluguel-id-devolver" placeholder="ID do Aluguel a ser devolvido" required>
+            <input type="date" id="aluguel-data-devolucao" required>
+            <button type="submit">Devolver</button>
+        </form>
+
+        <hr>
+
+        <form id="form-aluguel-buscar">
+            <h3>Buscar Aluguel por ID</h3>
+            <input type="text" id="aluguel-id-buscar" placeholder="ID do Aluguel" required>
+            <button type="submit">Buscar</button>
+        </form>
+
+        <hr>
+
+        <h3>Listar Aluguéis</h3>
+        <button id="btn-listar-alugueis">Buscar Todos os Aluguéis</button>
+        <pre id="lista-alugueis">Os resultados do serviço de aluguel aparecerão aqui...</pre>
+    </div>
 
     <script>
         // ================= URLs DAS APIs =================
@@ -75,11 +80,37 @@
         // ================= ELEMENTOS DO DOM =================
         const statusElement = document.getElementById('status');
         const errorElement = document.getElementById('error');
-        // ... outros getElementById ...
+
+        // --- Pagamento ---
         const paymentListElement = document.getElementById('lista-pagamentos');
         const formPagamentoExecutar = document.getElementById('form-pagamento-executar');
         const formPagamentoCancelar = document.getElementById('form-pagamento-cancelar');
         const btnListarPagamentos = document.getElementById('btn-listar-pagamentos');
+
+        // --- Livro ---
+        const bookListElement = document.getElementById('lista-livros');
+        const resultadoDisponibilidadeElement = document.getElementById('resultado-disponibilidade');
+        const formLivroCadastro = document.getElementById('form-livro-cadastro');
+        const formLivroBuscar = document.getElementById('form-livro-buscar');
+        const formLivroDisponibilidade = document.getElementById('form-livro-disponibilidade');
+        const btnListarLivros = document.getElementById('btn-listar-livros'); // <-- Faltando
+
+        // --- Aluguel ---
+        const aluguelListElement = document.getElementById('lista-alugueis');
+        const formAluguelCriar = document.getElementById('form-aluguel-criar');
+        const formAluguelRenovar = document.getElementById('form-aluguel-renovar');
+        const formAluguelDevolver = document.getElementById('form-aluguel-devolver');
+        const formAluguelBuscar = document.getElementById('form-aluguel-buscar');
+        const btnListarAlugueis = document.getElementById('btn-listar-alugueis');
+
+        // --- Usuário ---
+        const userListElement = document.getElementById('lista-usuarios');
+        const statusInadimplenciaElement = document.getElementById('status-inadimplencia');
+        const formUsuarioCadastro = document.getElementById('form-usuario-cadastro');
+        const formUsuarioRemocao = document.getElementById('form-usuario-remocao');
+        const formUsuarioSaldo = document.getElementById('form-usuario-saldo');
+        const formUsuarioVerificarInadimplencia = document.getElementById('form-usuario-verificar-inadimplencia');
+        const btnListarUsuarios = document.getElementById('btn-listar-usuarios');
         
         // ================= FUNÇÕES GERAIS =================
         function checkApiUrl(apiUrl, placeholderText) {
@@ -252,10 +283,14 @@
         });
 
 
-        // ================= FUNÇÕES DO SERVIÇO DE ALUGUEL =================
+
+
+        // =========FUNÇÕES DO SERVIÇO DE ALUGUEL================
+        
+        // LISTAR ALUGUÉIS (GET /alugueis)
         async function listarAlugueis() {
             clearMessages();
-            if (!checkApiUrl(ALUGUEL_API_BASE_URL, 'URL_DO_SERVICO_DE_ALUGUEL_AQUI', 'Aluguel')) return;
+            if (!checkApiUrl(ALUGUEL_API_BASE_URL)) return;
             aluguelListElement.textContent = 'Buscando...';
             try {
                 const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis`);
@@ -268,13 +303,16 @@
             }
         }
         
+        btnListarAlugueis.addEventListener('click', listarAlugueis);
+
+        // CRIAR ALUGUEL (POST /alugueis)
         formAluguelCriar.addEventListener('submit', async (event) => {
-            event.preventDefault(); clearMessages();
-            if (!checkApiUrl(ALUGUEL_API_BASE_URL, 'URL_DO_SERVICO_DE_ALUGUEL_AQUI', 'Aluguel')) return;
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(ALUGUEL_API_BASE_URL)) return;
             const novoAluguel = {
                 usuarioId: document.getElementById('aluguel-usuario-id').value,
-                livroId: document.getElementById('aluguel-livro-id').value,
-                prazo: document.getElementById('aluguel-prazo').value
+                livroId: document.getElementById('aluguel-livro-id').value
             };
             try {
                 const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis`, {
@@ -288,9 +326,70 @@
                 }
                 statusElement.textContent = `Aluguel criado com sucesso!`;
                 formAluguelCriar.reset();
-                listarAlugueis();
+                await listarAlugueis();
             } catch (error) {
                 errorElement.textContent = `Falha ao criar aluguel: ${error.message}`;
+            }
+        });
+
+        // BUSCAR ALUGUEL POR ID (GET /alugueis/:id)
+        formAluguelBuscar.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(ALUGUEL_API_BASE_URL)) return;
+            const aluguelId = document.getElementById('aluguel-id-buscar').value;
+            aluguelListElement.textContent = `Buscando aluguel com ID ${aluguelId}...`;
+            try {
+                const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis/${aluguelId}`);
+                if (!response.ok) throw new Error(`Erro ${response.status}: Aluguel não encontrado`);
+                const data = await response.json();
+                aluguelListElement.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                errorElement.textContent = `Falha ao buscar aluguel: ${error.message}`;
+            }
+        });
+
+        // RENOVAR ALUGUEL (PUT /alugueis/:id/renovar)
+        formAluguelRenovar.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(ALUGUEL_API_BASE_URL)) return;
+            const aluguelId = document.getElementById('aluguel-id-renovar').value;
+            const novoPrazo = parseInt(document.getElementById('aluguel-novo-prazo').value);
+            try {
+                const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis/${aluguelId}/renovar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ novoPrazo: novoPrazo })
+                });
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                statusElement.textContent = `Aluguel ID ${aluguelId} renovado com sucesso!`;
+                formAluguelRenovar.reset();
+                await listarAlugueis();
+            } catch (error) {
+                errorElement.textContent = `Falha ao renovar aluguel: ${error.message}`;
+            }
+        });
+
+        // DEVOLVER LIVRO (POST /alugueis/:id/devolver)
+        formAluguelDevolver.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(ALUGUEL_API_BASE_URL)) return;
+            const aluguelId = document.getElementById('aluguel-id-devolver').value;
+            const dataDevolucao = document.getElementById('aluguel-data-devolucao').value;
+            try {
+                const response = await fetch(`${ALUGUEL_API_BASE_URL}/alugueis/${aluguelId}/devolver`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dataDevolucao: dataDevolucao })
+                });
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                statusElement.textContent = `Livro do aluguel ID ${aluguelId} devolvido com sucesso!`;
+                formAluguelDevolver.reset();
+                await listarAlugueis();
+            } catch (error) {
+                errorElement.textContent = `Falha na devolução: ${error.message}`;
             }
         });
 
