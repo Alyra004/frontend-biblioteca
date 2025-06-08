@@ -419,14 +419,22 @@
             event.preventDefault();
             clearMessages();
             if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
+            
             const pagamentoId = document.getElementById('pagamento-id-cancelar').value;
             try {
+                // CORREÇÃO: Adicionamos o 'headers' e o 'body' à requisição
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/${pagamentoId}/cancelar`, {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: "Cancelado" }) // Enviando o corpo que o backend espera
                 });
+
                 if (!response.ok) throw new Error(`Erro ${response.status}`);
+                
                 const data = await response.json();
-                statusElement.textContent = data.mensagem || `Pagamento com ID ${pagamentoId} cancelado.`;
+                statusElement.textContent = data.mensagem || `Pagamento com ID ${pagamentoId} cancelado com sucesso.`;
                 formPagamentoCancelar.reset();
                 await listarPagamentos();
             } catch (error) {
