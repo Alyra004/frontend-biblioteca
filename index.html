@@ -26,116 +26,89 @@
     <h1>Sistema da Biblioteca 📚</h1>
     <p id="status"></p>
     <p id="error"></p>
+    
+    <div class="container">
+        <h2>Serviço de Pagamento</h2>
+        
+        <form id="form-pagamento-criar">
+            <h3>Criar Novo Pagamento</h3>
+            <input type="text" id="pagamento-usuario-id" placeholder="ID do Usuário para o pagamento" required>
+            <input type="number" id="pagamento-valor" placeholder="Valor (Ex: 25.50)" step="0.01" required>
+            <select id="pagamento-metodo" required>
+                <option value="" disabled selected>Selecione o método de criação...</option>
+                <option value="cartao-credito">Cartão de Crédito</option>
+                <option value="cartao-debito">Cartão de Débito</option>
+                <option value="pix">PIX</option>
+            </select>
+            <button type="submit">Criar Pagamento</button>
+        </form>
 
-            <div class="container">
-            <h2>Serviço de Pagamento</h2>
-            
-            <form id="form-pagamento-criar">
-                <h3>Criar Novo Pagamento</h3>
-                <input type="text" id="pagamento-usuario-id" placeholder="ID do Usuário para o pagamento" required>
-                <input type="number" id="pagamento-valor" placeholder="Valor (Ex: 25.50)" step="0.01" required>
-                <select id="pagamento-metodo" required>
-                    <option value="" disabled selected>Selecione o método de criação...</option>
-                    <option value="cartao-credito">Cartão de Crédito</option>
-                    <option value="cartao-debito">Cartão de Débito</option>
-                    <option value="pix">PIX</option>
-                </select>
-                <button type="submit">Criar Pagamento</button>
-            </form>
+        <hr>
 
-            <hr>
+        <form id="form-pagamento-efetuar">
+            <h3>Efetuar Pagamento Existente</h3>
+            <input type="text" id="pagamento-id-efetuar" placeholder="ID do pagamento a ser EFETUADO" required>
+            <button type="submit">Efetuar</button>
+        </form>
+        
+        <hr>
 
-            <form id="form-pagamento-criar">
-                <h3>Efetuar Pagamento Existente</h3>
-                <input type="text" id="pagamento-id-efetuar" placeholder="ID do pagamento a ser EFETUADO" required>
-                <button type="submit">Efetuar</button>
-            </form>
-            
-            <hr>
+        <form id="form-pagamento-consultar">
+            <h3>Consultar Pagamento por ID</h3>
+            <input type="text" id="pagamento-id-consultar" placeholder="ID do pagamento a ser consultado" required>
+            <button type="submit">Consultar</button>
+        </form>
+        
+        <hr>
 
-            <form id="form-pagamento-consultar">
-                <h3>Consultar Pagamento por ID</h3>
-                <input type="text" id="pagamento-id-consultar" placeholder="ID do pagamento a ser consultado" required>
-                <button type="submit">Consultar</button>
-            </form>
-            
-            <hr>
-
-            <form id="form-pagamento-cancelar">
-                <h3>Cancelar Pagamento</h3>
-                <input type="text" id="pagamento-id-cancelar" placeholder="ID do pagamento a ser cancelado" required>
-                <button type="submit" class="delete">Cancelar</button>
-            </form>
-            
-            <hr>
-            
-            <h3>Listar Todos os Pagamentos</h3>
-            <button id="btn-listar-pagamentos">Buscar Pagamentos</button>
-            <pre id="lista-pagamentos">As informações de pagamento aparecerão aqui...</pre>
-        </div>
+        <form id="form-pagamento-cancelar">
+            <h3>Cancelar Pagamento</h3>
+            <input type="text" id="pagamento-id-cancelar" placeholder="ID do pagamento a ser cancelado" required>
+            <button type="submit" class="delete">Cancelar</button>
+        </form>
+        
+        <hr>
+        
+        <h3>Listar Todos os Pagamentos</h3>
+        <button id="btn-listar-pagamentos">Buscar Pagamentos</button>
+        <pre id="lista-pagamentos">As informações de pagamento aparecerão aqui...</pre>
+    </div>
 
     <div class="container">
-
         <h2>Serviço de Livros</h2>
-
+        
         <form id="form-livro-cadastro">
-
             <h3>Cadastrar Novo Livro</h3>
-
             <input type="text" id="livro-id" placeholder="ID (Ex: 1)" required>
-
             <input type="text" id="livro-titulo" placeholder="Título do Livro" required>
-
             <input type="text" id="livro-autor" placeholder="Autor" required>
-
-   
-
             <input type="number" id="livro-ano" placeholder="Ano de Publicação" required>
-
-   
-
-            <input type="number" id="livro-quantidade" placeholder="Quantidade" required>
-
-   
-
+            <input type="number" id="livro-quantidade" placeholder="Quantidade" required> 
             <button type="submit">Cadastrar Livro</button>
-
         </form>
 
         <hr>
 
         <form id="form-livro-buscar">
-
             <h3>Buscar Livro por ID</h3>
-
             <input type="text" id="livro-id-buscar" placeholder="ID do livro a ser buscado" required>
-
             <button type="submit">Buscar Livro</button>
-
         </form>
 
         <hr>
-
+        
         <form id="form-livro-disponibilidade">
-
             <h3>Verificar Disponibilidade de Livro</h3>
-
             <input type="text" id="livro-id-disponibilidade" placeholder="ID do livro para verificar" required>
-
             <button type="submit">Verificar Disponibilidade</button>
-
         </form>
-
         <pre id="resultado-disponibilidade" style="margin-top: 5px; font-weight: bold;"></pre>
 
         <hr>
-
+        
         <h3>Listar Livros Cadastrados</h3>
-
-        <button onclick="listarLivros()">Buscar Todos os Livros</button>
-
+        <button id="btn-listar-livros">Buscar Todos os Livros</button>
         <pre id="lista-livros">Os resultados do serviço de livros aparecerão aqui...</pre>
-
     </div>
     
     <div class="container">
@@ -182,85 +155,53 @@
     </div>
 
     <div class="container">
-
         <h2>Serviço de Usuários</h2>
-
+        
         <form id="form-usuario-cadastro">
-
             <h3>Cadastrar Novo Usuário</h3>
-
             <input type="text" id="usuario-id" placeholder="ID (Ex: 102)" required>
-
             <input type="text" id="usuario-nome" placeholder="Nome Completo" required>
-
             <input type="email" id="usuario-email" placeholder="E-mail" required>
-
             <input type="text" id="usuario-telefone" placeholder="Telefone" required>
-
             <select id="usuario-tipo" required>
-
                 <option value="" disabled selected>Selecione o tipo de usuário...</option>
-
                 <option value="LOCATARIO">Locatário</option>
-
                 <option value="FUNCIONARIO">Funcionário</option>
-
             </select>
-
             <button type="submit">Cadastrar Usuário</button>
-
         </form>
-
+        
         <hr>
-
+        
         <form id="form-usuario-saldo">
-
             <h3>Atualizar Saldo Devedor</h3>
-
             <p style="font-size: 14px; color: #666; margin-top: -10px;">Use valores positivos para adicionar dívida e negativos para abater pagamentos.</p>
-
             <input type="text" id="usuario-id-saldo" placeholder="ID do usuário" required>
-
             <input type="number" step="0.01" id="usuario-valor-saldo" placeholder="Valor a adicionar/subtrair (Ex: 25.50 ou -10.00)" required>
-
             <button type="submit">Atualizar Saldo</button>
-
         </form>
-
 
         <hr>
-
+        
         <form id="form-usuario-verificar-inadimplencia">
-
             <h3>Verificar Inadimplência</h3>
-
             <input type="text" id="usuario-id-inadimplencia" placeholder="ID do usuário para verificar" required>
-
             <button type="submit">Verificar Status</button>
-
         </form>
-
         <pre id="status-inadimplencia" style="margin-top: 5px;"></pre>
 
-
         <hr>
-
+        
         <form id="form-usuario-remocao">
-
             <h3>Remover Usuário</h3>
-
             <input type="text" id="usuario-id-remover" placeholder="ID do usuário a ser removido" required>
-
             <button type="submit" class="delete">Remover Usuário</button>
-
         </form>
-
+        
         <hr>
-
+        
         <h3>Listar Usuários Cadastrados</h3>
-
-        <button onclick="listarUsuarios()">Buscar Usuários</button>
-
+        <button id="btn-listar-usuarios">Buscar Usuários</button>
         <pre id="lista-usuarios">A lista de usuários aparecerá aqui...</pre>
 
     </div> 
@@ -277,12 +218,12 @@
         const errorElement = document.getElementById('error');
 
         // --- Pagamento ---
-        const paymentListElement = document.getElementById('lista-pagamentos');
-        const formPagamentoExecutar = document.getElementById('form-pagamento-executar');
-        const formPagamentoCancelar = document.getElementById('form-pagamento-cancelar');
-        const btnListarPagamentos = document.getElementById('btn-listar-pagamentos');
+        const formPagamentoCriar = document.getElementById('form-pagamento-criar'); // Corresponde ao id no HTML
         const formPagamentoEfetuar = document.getElementById('form-pagamento-efetuar');
         const formPagamentoConsultar = document.getElementById('form-pagamento-consultar');
+        const formPagamentoCancelar = document.getElementById('form-pagamento-cancelar');
+        const btnListarPagamentos = document.getElementById('btn-listar-pagamentos');
+        const paymentListElement = document.getElementById('lista-pagamentos');
 
         // --- Livro ---
         const bookListElement = document.getElementById('lista-livros');
@@ -329,10 +270,8 @@
         async function listarPagamentos() {
             clearMessages();
             if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
-            
-            paymentListElement.textContent = 'Buscando pagamentos...';
+            paymentListElement.textContent = 'Buscando...';
             try {
-                // A API de pagamentos usa a raiz (/) para listar
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}/`);
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
                 const data = await response.json();
@@ -342,25 +281,21 @@
                 errorElement.textContent = error.message;
             }
         }
-        // Anexa a função ao botão
         btnListarPagamentos.addEventListener('click', listarPagamentos);
 
-
         // CRIAR PAGAMENTO (POST /cartao-credito, /pix, etc.)
-        // Nota: Seu HTML usa o id 'form-pagamento-executar', então usaremos essa variável.
-        formPagamentoExecutar.addEventListener('submit', async (event) => {
+        formPagamentoCriar.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
             if (!checkApiUrl(PAGAMENTO_API_BASE_URL)) return;
-
+            
             const metodo = document.getElementById('pagamento-metodo').value;
-            const endpoint = `/${metodo}`; // Monta a rota: /cartao-credito, /pix, etc.
-
+            const endpoint = `/${metodo}`;
+            
             const novoPagamento = {
                 usuarioId: document.getElementById('pagamento-usuario-id').value,
                 valor: parseFloat(document.getElementById('pagamento-valor').value)
             };
-
             try {
                 const response = await fetch(`${PAGAMENTO_API_BASE_URL}${endpoint}`, {
                     method: 'POST',
@@ -370,13 +305,12 @@
                 if (!response.ok) throw new Error(`Erro ${response.status}`);
                 const data = await response.json();
                 statusElement.textContent = `Pagamento (ID: ${data._id || data.id}) criado com sucesso!`;
-                formPagamentoExecutar.reset();
+                formPagamentoCriar.reset();
                 await listarPagamentos();
             } catch (error) {
                 errorElement.textContent = `Falha ao criar pagamento: ${error.message}`;
             }
         });
-
 
         // EFETUAR PAGAMENTO (POST /:id/efetuar)
         formPagamentoEfetuar.addEventListener('submit', async (event) => {
@@ -398,7 +332,6 @@
             }
         });
 
-
         // CONSULTAR PAGAMENTO (GET /:id)
         formPagamentoConsultar.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -415,7 +348,6 @@
                 errorElement.textContent = `Falha ao consultar pagamento: ${error.message}`;
             }
         });
-
 
         // CANCELAR PAGAMENTO (POST /:id/cancelar)
         formPagamentoCancelar.addEventListener('submit', async (event) => {
