@@ -29,166 +29,62 @@
     
     <div class="container">
         <h2>Serviço de Pagamento</h2>
-        
         <form id="form-pagamento-executar">
             <h3>Executar Novo Pagamento</h3>
             <input type="text" id="pagamento-usuario-id" placeholder="ID do Usuário" required>
             <input type="number" id="pagamento-valor" placeholder="Valor (Ex: 25.50)" step="0.01" required>
             <select id="pagamento-metodo" required>
                 <option value="" disabled selected>Selecione o método...</option>
-                <option value="CARTAO_CREDITO">Cartão de Crédito</option>
-                <option value="CARTAO_DEBITO">Cartão de Débito</option>
-                <option value="PIX">PIX</option>
+                <option value="cartao-credito">Cartão de Crédito</option>
+                <option value="cartao-debito">Cartão de Débito</option>
+                <option value="pix">PIX</option>
             </select>
             <button type="submit">Efetuar Pagamento</button>
         </form>
-
         <hr>
-
         <form id="form-pagamento-cancelar">
             <h3>Cancelar Pagamento</h3>
             <input type="text" id="pagamento-id-cancelar" placeholder="ID do pagamento a ser cancelado" required>
             <button type="submit" class="delete">Cancelar Pagamento</button>
         </form>
-        
         <hr>
-        
-        <h3>Listar Formas de Pagamento</h3>
-        <button onclick="listarFormasPagamento()">Buscar Formas de Pagamento</button>
+        <h3>Listar Pagamentos</h3>
+        <button id="btn-listar-pagamentos">Buscar Todos os Pagamentos</button>
         <pre id="lista-pagamentos">As informações de pagamento aparecerão aqui...</pre>
     </div>
 
     <div class="container">
         <h2>Serviço de Livros</h2>
-        <form id="form-livro-cadastro">
-            <h3>Cadastrar Novo Livro</h3>
-            <input type="text" id="livro-id" placeholder="ID (Ex: 1)" required>
-            <input type="text" id="livro-titulo" placeholder="Título do Livro" required>
-            <input type="text" id="livro-autor" placeholder="Autor" required>
+        </div>
     
-            <input type="number" id="livro-ano" placeholder="Ano de Publicação" required>
-    
-            <input type="number" id="livro-quantidade" placeholder="Quantidade" required> 
-    
-            <button type="submit">Cadastrar Livro</button>
-        </form>
-        <hr>
-        <form id="form-livro-buscar">
-            <h3>Buscar Livro por ID</h3>
-            <input type="text" id="livro-id-buscar" placeholder="ID do livro a ser buscado" required>
-            <button type="submit">Buscar Livro</button>
-        </form>
-        <hr>
-        <form id="form-livro-disponibilidade">
-            <h3>Verificar Disponibilidade de Livro</h3>
-            <input type="text" id="livro-id-disponibilidade" placeholder="ID do livro para verificar" required>
-            <button type="submit">Verificar Disponibilidade</button>
-        </form>
-        <pre id="resultado-disponibilidade" style="margin-top: 5px; font-weight: bold;"></pre>
-        <hr>
-        <h3>Listar Livros Cadastrados</h3>
-        <button onclick="listarLivros()">Buscar Todos os Livros</button>
-        <pre id="lista-livros">Os resultados do serviço de livros aparecerão aqui...</pre>
-    </div>
-
     <div class="container">
         <h2>Serviço de Aluguel</h2>
-        <form id="form-aluguel-criar">
-            <h3>Criar Novo Aluguel</h3>
-            <input type="text" id="aluguel-usuario-id" placeholder="ID do Usuário" required>
-            <input type="text" id="aluguel-livro-id" placeholder="ID do Livro" required>
-            <input type="number" id="aluguel-prazo" placeholder="Prazo (em dias)" required>
-            <button type="submit">Criar Aluguel</button>
-        </form>
-        <hr>
-        <h3>Listar Aluguéis</h3>
-        <button onclick="listarAlugueis()">Buscar Todos os Aluguéis</button>
-        <pre id="lista-alugueis">A lista de aluguéis aparecerá aqui...</pre>
-    </div>
+        </div>
 
     <div class="container">
         <h2>Serviço de Usuários</h2>
-        <form id="form-usuario-cadastro">
-            <h3>Cadastrar Novo Usuário</h3>
-            <input type="text" id="usuario-id" placeholder="ID (Ex: 102)" required>
-            <input type="text" id="usuario-nome" placeholder="Nome Completo" required>
-            <input type="email" id="usuario-email" placeholder="E-mail" required>
-            <input type="text" id="usuario-telefone" placeholder="Telefone" required>
-            <select id="usuario-tipo" required>
-                <option value="" disabled selected>Selecione o tipo de usuário...</option>
-                <option value="LOCATARIO">Locatário</option>
-                <option value="FUNCIONARIO">Funcionário</option>
-            </select>
-            <button type="submit">Cadastrar Usuário</button>
-        </form>
-        <hr>
-        <form id="form-usuario-saldo">
-            <h3>Atualizar Saldo Devedor</h3>
-            <p style="font-size: 14px; color: #666; margin-top: -10px;">Use valores positivos para adicionar dívida e negativos para abater pagamentos.</p>
-            <input type="text" id="usuario-id-saldo" placeholder="ID do usuário" required>
-            <input type="number" step="0.01" id="usuario-valor-saldo" placeholder="Valor a adicionar/subtrair (Ex: 25.50 ou -10.00)" required>
-            <button type="submit">Atualizar Saldo</button>
-        </form>
-
-        <hr>
-        <form id="form-usuario-verificar-inadimplencia">
-            <h3>Verificar Inadimplência</h3>
-            <input type="text" id="usuario-id-inadimplencia" placeholder="ID do usuário para verificar" required>
-            <button type="submit">Verificar Status</button>
-        </form>
-        <pre id="status-inadimplencia" style="margin-top: 5px;"></pre>
-
-        <hr>
-        <form id="form-usuario-remocao">
-            <h3>Remover Usuário</h3>
-            <input type="text" id="usuario-id-remover" placeholder="ID do usuário a ser removido" required>
-            <button type="submit" class="delete">Remover Usuário</button>
-        </form>
-        <hr>
-        <h3>Listar Usuários Cadastrados</h3>
-        <button onclick="listarUsuarios()">Buscar Usuários</button>
-        <pre id="lista-usuarios">A lista de usuários aparecerá aqui...</pre>
-    </div>
+        </div>
 
     <script>
         // ================= URLs DAS APIs =================
         const USUARIO_API_BASE_URL = 'https://servico-usuarios-production.up.railway.app';
-        const ALUGUEL_API_BASE_URL = 'URL_DO_SERVICO_DE_ALUGUEL_AQUI';
+        const ALUGUEL_API_BASE_URL = 'https://gest-oaluguel-production.up.railway.app';
         const LIVRO_API_BASE_URL = 'https://miocroservice-books-production.up.railway.app';
         const PAGAMENTO_API_BASE_URL = 'https://microsservico-pagamento.onrender.com';
 
         // ================= ELEMENTOS DO DOM =================
         const statusElement = document.getElementById('status');
         const errorElement = document.getElementById('error');
-
-        // --- Pagamento ---
+        // ... outros getElementById ...
         const paymentListElement = document.getElementById('lista-pagamentos');
         const formPagamentoExecutar = document.getElementById('form-pagamento-executar');
         const formPagamentoCancelar = document.getElementById('form-pagamento-cancelar');
-
-        // --- Livro ---
-        const bookListElement = document.getElementById('lista-livros');
-        const formLivroCadastro = document.getElementById('form-livro-cadastro');
-        const formLivroBuscar = document.getElementById('form-livro-buscar');
-        const formLivroDisponibilidade = document.getElementById('form-livro-disponibilidade');
-        const resultadoDisponibilidadeElement = document.getElementById('resultado-disponibilidade');
-
-        // --- Aluguel ---
-        const aluguelListElement = document.getElementById('lista-alugueis');
-        const formAluguelCriar = document.getElementById('form-aluguel-criar');
-
-        // --- Usuário ---
-        const userListElement = document.getElementById('lista-usuarios');
-        const formUsuarioCadastro = document.getElementById('form-usuario-cadastro');
-        const formUsuarioRemocao = document.getElementById('form-usuario-remocao');
-        const formUsuarioSaldo = document.getElementById('form-usuario-saldo');
-        const formUsuarioVerificarInadimplencia = document.getElementById('form-usuario-verificar-inadimplencia');
-        const statusInadimplenciaElement = document.getElementById('status-inadimplencia');
+        const btnListarPagamentos = document.getElementById('btn-listar-pagamentos');
         
         // ================= FUNÇÕES GERAIS =================
-        function checkApiUrl(apiUrl, placeholderText, serviceName) {
+        function checkApiUrl(apiUrl, placeholderText) {
             if (!apiUrl || apiUrl === placeholderText) {
-                errorElement.textContent = `ERRO: A URL do serviço de ${serviceName} ainda não foi configurada.`;
+                errorElement.textContent = `ERRO: A URL de um serviço ainda não foi configurada.`;
                 return false;
             }
             return true;
@@ -199,55 +95,69 @@
             errorElement.textContent = '';
         }
 
-        // ================= FUNÇÕES DO SERVIÇO DE PAGAMENTO =================
         
-        async function listarFormasPagamento() {
+        // ===============FUNÇÕES DO SERVIÇO DE PAGAMENTO===================
+        async function listarPagamentos() {
             clearMessages();
-            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'https://microsservico-pagamento.onrender.com', 'Pagamento')) return;
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'https://microsservico-pagamento.onrender.com')) return;
             paymentListElement.textContent = 'Buscando...';
             try {
-                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos`);
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/`); 
                 if (!response.ok) throw new Error(`Erro: ${response.status}`);
                 const data = await response.json();
-                paymentListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhuma forma de pagamento encontrada.';
+                paymentListElement.textContent = data.length > 0 ? JSON.stringify(data, null, 2) : 'Nenhum pagamento encontrado.';
             } catch (error) {
                 paymentListElement.textContent = 'Falha ao buscar dados.';
                 errorElement.textContent = error.message;
             }
         }
 
+        btnListarPagamentos.addEventListener('click', listarPagamentos);
+
+
         formPagamentoExecutar.addEventListener('submit', async (event) => {
-            event.preventDefault(); clearMessages();
-            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'https://microsservico-pagamento.onrender.com', 'Pagamento')) return;
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'https://microsservico-pagamento.onrender.com')) return;
+            
+            const metodo = document.getElementById('pagamento-metodo').value;
+            const endpoint = `/${metodo}`;
+
             const novoPagamento = {
                 usuarioId: document.getElementById('pagamento-usuario-id').value,
-                valor: parseFloat(document.getElementById('pagamento-valor').value),
-                metodo: document.getElementById('pagamento-metodo').value
+                valor: parseFloat(document.getElementById('pagamento-valor').value)
             };
+
             try {
-                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos`, {
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(novoPagamento)
                 });
                 if (!response.ok) throw new Error(`Erro ${response.status}`);
                 const data = await response.json();
-                statusElement.textContent = `Pagamento (ID: ${data.id}) de R$${data.valor} efetuado com sucesso!`;
+                statusElement.textContent = `Pagamento criado com sucesso!`;
                 formPagamentoExecutar.reset();
+                await listarPagamentos();
             } catch (error) {
                 errorElement.textContent = `Falha ao executar pagamento: ${error.message}`;
             }
         });
 
         formPagamentoCancelar.addEventListener('submit', async (event) => {
-            event.preventDefault(); clearMessages();
-            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'https://microsservico-pagamento.onrender.com', 'Pagamento')) return;
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(PAGAMENTO_API_BASE_URL, 'https://microsservico-pagamento.onrender.com')) return;
             const pagamentoId = document.getElementById('pagamento-id-cancelar').value;
             try {
-                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/pagamentos/${pagamentoId}`, { method: 'DELETE' });
+                const response = await fetch(`${PAGAMENTO_API_BASE_URL}/${pagamentoId}/cancelar`, {
+                    method: 'POST'
+                });
                 if (!response.ok) throw new Error(`Erro ${response.status}`);
-                statusElement.textContent = `Pagamento com ID ${pagamentoId} cancelado com sucesso!`;
+                const data = await response.json();
+                statusElement.textContent = data.mensagem || `Pagamento com ID ${pagamentoId} cancelado.`;
                 formPagamentoCancelar.reset();
+                await listarPagamentos();
             } catch (error) {
                 errorElement.textContent = `Falha ao cancelar pagamento: ${error.message}`;
             }
@@ -456,7 +366,7 @@
             clearMessages(); // Limpa mensagens de status/erro globais
             statusInadimplenciaElement.textContent = 'Verificando...'; // Limpa resultado anterior
     
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SEU_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) { // Atualizado para usar o serviceName
+            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SEU_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) {
             statusInadimplenciaElement.textContent = 'URL da API não configurada.';
             return;
             }
@@ -484,10 +394,7 @@
                 }
         
             } catch (error) {
-                // A mensagem de erro específica já foi definida antes de lançar
-                // Apenas logamos no console para depuração, se necessário
                 console.error('Falha ao verificar inadimplência:', error.message);
-                // errorElement.textContent = error.message; // Se quiser exibir no campo de erro global
             }
         });
 
