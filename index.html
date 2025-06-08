@@ -26,6 +26,96 @@
     <h1>Sistema da Biblioteca 📚</h1>
     <p id="status"></p>
     <p id="error"></p>
+
+    <div class="container">
+        <h2>Serviço de Pagamento</h2>
+        <form id="form-pagamento-executar">
+            <h3>Executar Novo Pagamento</h3>
+            <input type="text" id="pagamento-usuario-id" placeholder="ID do Usuário" required>
+            <input type="number" id="pagamento-valor" placeholder="Valor (Ex: 25.50)" step="0.01" required>
+            <select id="pagamento-metodo" required>
+                <option value="" disabled selected>Selecione o método...</option>
+                <option value="cartao-credito">Cartão de Crédito</option>
+                <option value="cartao-debito">Cartão de Débito</option>
+                <option value="pix">PIX</option>
+            </select>
+            <button type="submit">Efetuar Pagamento</button>
+        </form>
+        <hr>
+        <form id="form-pagamento-cancelar">
+            <h3>Cancelar Pagamento</h3>
+            <input type="text" id="pagamento-id-cancelar" placeholder="ID do pagamento a ser cancelado" required>
+            <button type="submit" class="delete">Cancelar Pagamento</button>
+        </form>
+        <hr>
+        <h3>Listar Pagamentos</h3>
+        <button id="btn-listar-pagamentos">Buscar Todos os Pagamentos</button>
+        <pre id="lista-pagamentos">As informações de pagamento aparecerão aqui...</pre>
+    </div>
+
+    <div class="container">
+
+        <h2>Serviço de Livros</h2>
+
+        <form id="form-livro-cadastro">
+
+            <h3>Cadastrar Novo Livro</h3>
+
+            <input type="text" id="livro-id" placeholder="ID (Ex: 1)" required>
+
+            <input type="text" id="livro-titulo" placeholder="Título do Livro" required>
+
+            <input type="text" id="livro-autor" placeholder="Autor" required>
+
+   
+
+            <input type="number" id="livro-ano" placeholder="Ano de Publicação" required>
+
+   
+
+            <input type="number" id="livro-quantidade" placeholder="Quantidade" required>
+
+   
+
+            <button type="submit">Cadastrar Livro</button>
+
+        </form>
+
+        <hr>
+
+        <form id="form-livro-buscar">
+
+            <h3>Buscar Livro por ID</h3>
+
+            <input type="text" id="livro-id-buscar" placeholder="ID do livro a ser buscado" required>
+
+            <button type="submit">Buscar Livro</button>
+
+        </form>
+
+        <hr>
+
+        <form id="form-livro-disponibilidade">
+
+            <h3>Verificar Disponibilidade de Livro</h3>
+
+            <input type="text" id="livro-id-disponibilidade" placeholder="ID do livro para verificar" required>
+
+            <button type="submit">Verificar Disponibilidade</button>
+
+        </form>
+
+        <pre id="resultado-disponibilidade" style="margin-top: 5px; font-weight: bold;"></pre>
+
+        <hr>
+
+        <h3>Listar Livros Cadastrados</h3>
+
+        <button onclick="listarLivros()">Buscar Todos os Livros</button>
+
+        <pre id="lista-livros">Os resultados do serviço de livros aparecerão aqui...</pre>
+
+    </div>
     
     <div class="container">
         <h2>Serviço de Aluguel</h2>
@@ -69,6 +159,90 @@
         <button id="btn-listar-alugueis">Buscar Todos os Aluguéis</button>
         <pre id="lista-alugueis">Os resultados do serviço de aluguel aparecerão aqui...</pre>
     </div>
+
+    <div class="container">
+
+        <h2>Serviço de Usuários</h2>
+
+        <form id="form-usuario-cadastro">
+
+            <h3>Cadastrar Novo Usuário</h3>
+
+            <input type="text" id="usuario-id" placeholder="ID (Ex: 102)" required>
+
+            <input type="text" id="usuario-nome" placeholder="Nome Completo" required>
+
+            <input type="email" id="usuario-email" placeholder="E-mail" required>
+
+            <input type="text" id="usuario-telefone" placeholder="Telefone" required>
+
+            <select id="usuario-tipo" required>
+
+                <option value="" disabled selected>Selecione o tipo de usuário...</option>
+
+                <option value="LOCATARIO">Locatário</option>
+
+                <option value="FUNCIONARIO">Funcionário</option>
+
+            </select>
+
+            <button type="submit">Cadastrar Usuário</button>
+
+        </form>
+
+        <hr>
+
+        <form id="form-usuario-saldo">
+
+            <h3>Atualizar Saldo Devedor</h3>
+
+            <p style="font-size: 14px; color: #666; margin-top: -10px;">Use valores positivos para adicionar dívida e negativos para abater pagamentos.</p>
+
+            <input type="text" id="usuario-id-saldo" placeholder="ID do usuário" required>
+
+            <input type="number" step="0.01" id="usuario-valor-saldo" placeholder="Valor a adicionar/subtrair (Ex: 25.50 ou -10.00)" required>
+
+            <button type="submit">Atualizar Saldo</button>
+
+        </form>
+
+
+        <hr>
+
+        <form id="form-usuario-verificar-inadimplencia">
+
+            <h3>Verificar Inadimplência</h3>
+
+            <input type="text" id="usuario-id-inadimplencia" placeholder="ID do usuário para verificar" required>
+
+            <button type="submit">Verificar Status</button>
+
+        </form>
+
+        <pre id="status-inadimplencia" style="margin-top: 5px;"></pre>
+
+
+        <hr>
+
+        <form id="form-usuario-remocao">
+
+            <h3>Remover Usuário</h3>
+
+            <input type="text" id="usuario-id-remover" placeholder="ID do usuário a ser removido" required>
+
+            <button type="submit" class="delete">Remover Usuário</button>
+
+        </form>
+
+        <hr>
+
+        <h3>Listar Usuários Cadastrados</h3>
+
+        <button onclick="listarUsuarios()">Buscar Usuários</button>
+
+        <pre id="lista-usuarios">A lista de usuários aparecerá aqui...</pre>
+
+    </div> 
 
     <script>
         // ================= URLs DAS APIs =================
