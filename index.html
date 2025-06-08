@@ -599,9 +599,10 @@
         });
 
         // ================= FUNÇÕES DO SERVIÇO DE USUÁRIOS =================
+        // LISTAR USUÁRIOS (GET /usuarios)
         async function listarUsuarios() {
             clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) return;
+            if (!checkApiUrl(USUARIO_API_BASE_URL)) return;
             userListElement.textContent = 'Buscando...';
             try {
                 const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios`);
@@ -613,7 +614,11 @@
                 errorElement.textContent = error.message;
             }
         }
+        // Conectando o botão à função
+        btnListarUsuarios.addEventListener('click', listarUsuarios);
 
+
+        // BUSCAR USUÁRIO POR ID (GET /usuarios/:id)
         formUsuarioBuscar.addEventListener('submit', async (event) => {
             event.preventDefault();
             clearMessages();
@@ -624,15 +629,18 @@
                 const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${usuarioId}`);
                 if (!response.ok) throw new Error(`Erro ${response.status}: Usuário não encontrado`);
                 const data = await response.json();
-                userListElement.textContent = JSON.stringify(data, null, 2); // Exibe o usuário encontrado
+                userListElement.textContent = JSON.stringify(data, null, 2);
             } catch (error) {
                 errorElement.textContent = `Falha ao buscar usuário: ${error.message}`;
             }
         });
 
+
+        // CADASTRAR USUÁRIO (POST /usuarios)
         formUsuarioCadastro.addEventListener('submit', async (event) => {
-            event.preventDefault(); clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) return;
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(USUARIO_API_BASE_URL)) return;
             const usuario = {
                 id: document.getElementById('usuario-id').value,
                 nome: document.getElementById('usuario-nome').value,
@@ -653,15 +661,18 @@
                 const data = await response.json();
                 statusElement.textContent = `Usuário "${data.nome}" (tipo: ${data.tipo}) cadastrado com sucesso!`;
                 formUsuarioCadastro.reset();
-                listarUsuarios();
+                await listarUsuarios();
             } catch (error) {
                 errorElement.textContent = `Falha ao cadastrar: ${error.message}`;
             }
         });
 
+
+        // ATUALIZAR SALDO (PATCH /usuarios/:id/saldo)
         formUsuarioSaldo.addEventListener('submit', async (event) => {
-            event.preventDefault(); clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) return;
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(USUARIO_API_BASE_URL)) return;
             const usuarioId = document.getElementById('usuario-id-saldo').value;
             const valor = parseFloat(document.getElementById('usuario-valor-saldo').value);
             try {
@@ -675,59 +686,49 @@
                 const data = await response.json();
                 statusElement.textContent = `Saldo do usuário ${data.nome} atualizado para R$${data.saldoDevedor.toFixed(2)}. Inadimplente: ${data.inadimplente}`;
                 formUsuarioSaldo.reset();
-                listarUsuarios();
+                await listarUsuarios();
             } catch (error) {
                 errorElement.textContent = `Falha ao atualizar saldo: ${error.message}`;
             }
         });
 
+
+        // VERIFICAR INADIMPLÊNCIA (GET /usuarios/:id/inadimplencia)
         formUsuarioVerificarInadimplencia.addEventListener('submit', async (event) => {
             event.preventDefault();
-            clearMessages(); // Limpa mensagens de status/erro globais
-            statusInadimplenciaElement.textContent = 'Verificando...'; // Limpa resultado anterior
-    
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SEU_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) {
-            statusInadimplenciaElement.textContent = 'URL da API não configurada.';
-            return;
-            }
-
+            clearMessages();
+            statusInadimplenciaElement.textContent = 'Verificando...';
+            if (!checkApiUrl(USUARIO_API_BASE_URL)) return;
             const usuarioId = document.getElementById('usuario-id-inadimplencia').value;
-
             try {
                 const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${usuarioId}/inadimplencia`);
-
-                if (response.status === 404) {
-                    statusInadimplenciaElement.textContent = `Usuário com ID ${usuarioId} não encontrado.`;
-                    throw new Error(`Erro 404: Usuário não encontrado.`); // Lança para o catch
-                }
-                if (!response.ok) {
-                    statusInadimplenciaElement.textContent = `Erro ao verificar: ${response.status}`;
-                    throw new Error(`Erro: ${response.status}`); // Lança para o catch
-                }
-        
-                const data = await response.json(); // Espera-se {"inadimplente": true/false}
-        
+                if (response.status === 404) throw new Error(`Usuário com ID ${usuarioId} não encontrado.`);
+                if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
+                const data = await response.json();
                 if (data.inadimplente) {
                     statusInadimplenciaElement.textContent = `O usuário ${usuarioId} ESTÁ inadimplente.`;
                 } else {
                     statusInadimplenciaElement.textContent = `O usuário ${usuarioId} NÃO está inadimplente.`;
                 }
-        
             } catch (error) {
-                console.error('Falha ao verificar inadimplência:', error.message);
+                statusInadimplenciaElement.textContent = 'Falha ao verificar.';
+                errorElement.textContent = error.message;
             }
         });
 
+
+        // REMOVER USUÁRIO (DELETE /usuarios/:id)
         formUsuarioRemocao.addEventListener('submit', async (event) => {
-            event.preventDefault(); clearMessages();
-            if (!checkApiUrl(USUARIO_API_BASE_URL, 'URL_DO_SERVICO_DE_USUARIOS_AQUI', 'Usuários')) return;
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(USUARIO_API_BASE_URL)) return;
             const idParaRemover = document.getElementById('usuario-id-remover').value;
             try {
                 const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${idParaRemover}`, { method: 'DELETE' });
                 if (!response.ok) throw new Error(`Erro: ${response.status}. Usuário não encontrado.`);
                 statusElement.textContent = `Usuário com ID ${idParaRemover} removido com sucesso!`;
                 formUsuarioRemocao.reset();
-                listarUsuarios();
+                await listarUsuarios();
             } catch (error) {
                 errorElement.textContent = `Falha ao remover: ${error.message}`;
             }
