@@ -170,6 +170,12 @@
             </select>
             <button type="submit">Cadastrar Usuário</button>
         </form>
+
+        <form id="form-usuario-buscar">
+            <h3>Buscar Usuário por ID</h3>
+            <input type="text" id="usuario-id-buscar" placeholder="ID do usuário a ser buscado" required>
+            <button type="submit">Buscar Usuário</button>
+        </form>
         
         <hr>
         
@@ -250,6 +256,7 @@
         const formUsuarioSaldo = document.getElementById('form-usuario-saldo');
         const formUsuarioVerificarInadimplencia = document.getElementById('form-usuario-verificar-inadimplencia');
         const btnListarUsuarios = document.getElementById('btn-listar-usuarios');
+        const formUsuarioBuscar = document.getElementById('form-usuario-buscar');
         
         // ================= FUNÇÕES GERAIS =================
         function checkApiUrl(apiUrl, placeholderText) {
@@ -606,6 +613,22 @@
                 errorElement.textContent = error.message;
             }
         }
+
+        formUsuarioBuscar.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearMessages();
+            if (!checkApiUrl(USUARIO_API_BASE_URL)) return;
+            const usuarioId = document.getElementById('usuario-id-buscar').value;
+            userListElement.textContent = `Buscando usuário com ID ${usuarioId}...`;
+            try {
+                const response = await fetch(`${USUARIO_API_BASE_URL}/usuarios/${usuarioId}`);
+                if (!response.ok) throw new Error(`Erro ${response.status}: Usuário não encontrado`);
+                const data = await response.json();
+                userListElement.textContent = JSON.stringify(data, null, 2); // Exibe o usuário encontrado
+            } catch (error) {
+                errorElement.textContent = `Falha ao buscar usuário: ${error.message}`;
+            }
+        });
 
         formUsuarioCadastro.addEventListener('submit', async (event) => {
             event.preventDefault(); clearMessages();
